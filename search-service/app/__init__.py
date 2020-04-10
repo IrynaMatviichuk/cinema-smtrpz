@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+# from flask_migrate import Migrate
 
 from config import app_config
 
@@ -14,5 +14,8 @@ def create_app(config_name):
 
     from .movie_service import movie_service as movie_service_blueprint
     app.register_blueprint(movie_service_blueprint, url_prefix="/movie")
+
+    from .screening_service import screening_service as screening_service_blueprint
+    app.register_blueprint(screening_service_blueprint, url_prefix="/screening")
 
     return app
