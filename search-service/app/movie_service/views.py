@@ -29,7 +29,6 @@ def insert():
 def update(movie_id):
     movie_data = request.get_json()
     movie = Movie.query.get_or_404(movie_id)
-    movie.title = movie_data.get("title", movie.title)
     movie.duration = movie_data.get("duration", movie.duration)
     movie.genre = movie_data.get("genre", movie.genre)
     db.session.commit()

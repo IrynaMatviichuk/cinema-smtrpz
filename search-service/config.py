@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+working_day_start = "10:00:00"
+working_day_end = "23:00:00"
+
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
