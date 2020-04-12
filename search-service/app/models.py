@@ -1,27 +1,52 @@
+import datetime
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import validates
 
 from app import db
+from config import working_day_start, working_day_end
+
+
+class Genre(db.Model):
+    __tablename__ = "genre"
+
+    genre_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), unique=True, nullable=False)
+    movies = db.relationship("Movie", backref="genre", lazy=False)
+
+    def __repr__(self):
+        return f"<Genre: (genre_id={self.genre_id}, name={self.name})>"
+
+    def to_dict(self):
+        return {
+            "genre_id": self.genre_id,
+            "name": self.name,
+        }
 
 
 class Movie(db.Model):
     __tablename__ = "movie"
+    # __table_args__ = (
+    #     db.CheckConstraint("duration >= 60 and duration <= 240"),
+    # )
 
     movie_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), unique=True, nullable=False)
     duration = db.Column(db.Integer, nullable=False)
-    genre = db.Column(db.Integer, nullable=False)
+    genre_id_fk = db.Column(db.Integer, db.ForeignKey("genre.genre_id"), nullable=False)
+    description = db.Column(db.Text, nullable=False)
     screenings = db.relationship("Screening", backref="movie", lazy=False)
 
-    def __init__(self, title, duration, genre):
+    def __init__(self, title, duration, genre_id_fk, description):
         self.title = title
         self.duration = duration
-        self.genre = genre
+        self.genre_id_fk = genre_id_fk
+        self.description = description
 
     def __repr__(self):
         return (
-            f"<Movie:(movie_id={self.movie_id}, title={self.title}, "
-            f"duration={self.duration}, genre={self.duration})>"
+            f"<Movie:(movie_id={self.movie_id}, title={self.title}, duration={self.duration}, "
+            f"genre={self.genre_if_fk}, description={self.description})>"
         )
 
     def to_dict(self):
@@ -29,10 +54,8 @@ class Movie(db.Model):
             "movie_id": self.movie_id,
             "title": self.title,
             "duration": self.duration,
-            "genre": self.genre,
-            # "screenings": [
-            #     screening.to_dict() for screening in self.screenings
-            # ],
+            "genre": self.genre.to_dict(),
+            "description": self.description
         }
 
     @validates("title")
@@ -52,16 +75,8 @@ class Movie(db.Model):
 
         return duration
 
-    @validates("genre")
-    def validate_genre(self, key, genre):
-        if genre not in ["fantasy", "adventures", "comdey", "action", "drama"]:
-            raise AssertionError("No such movie genre")
-
-        return genre
-
 
 class Auditorium(db.Model):
-    #TODO: check validation
     __tablename__ = "auditorium"
 
     auditorium_id = db.Column(db.Integer, primary_key=True)
@@ -78,9 +93,6 @@ class Auditorium(db.Model):
         return {
             "auditorium_id": self.auditorium_id,
             "name": self.name,
-            # "screenings": [
-            #     screening.to_dict() for screening in self.screenings
-            # ],
         }
 
     @validates("name")
@@ -95,8 +107,11 @@ class Auditorium(db.Model):
 
 
 class Screening(db.Model):
-    #TODO: add validation
+    #TODO: unique constraint validation
     __tablename__ = "screening"
+    __table_args__ = (
+        db.UniqueConstraint("auditorium_id_fk", "screening_date", "start_time", name="unique_screening"),
+    )
 
     screening_id = db.Column(db.Integer, primary_key=True)
     movie_id_fk = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), nullable=False)
@@ -104,18 +119,20 @@ class Screening(db.Model):
     price = db.Column(db.Integer, nullable=False)
     screening_date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
 
-    def __init__(self, movie_id_fk, auditorium_id_fk, price, screening_date, start_time):
+    def __init__(self, movie_id_fk, auditorium_id_fk, price, screening_date, start_time, end_time):
         self.movie_id_fk = movie_id_fk
         self.auditorium_id_fk = auditorium_id_fk
         self.price = price
         self.screening_date = screening_date
         self.start_time = start_time
+        self.end_time = end_time
 
     def __repr__(self):
         return (
             f"<Screening:(screening_id={self.screening_id}, movie_id_fk={self.movie_id_fk}, auditorium_id_fk={self.auditorium_id_fk}, "
-            f"price={self.price}, screening_date={self.screening_date}, start_time={self.start_time})>"
+            f"price={self.price}, screening_date={self.screening_date}, start_time={self.start_time}, end_time={self.end_time})>"
         )
 
     def to_dict(self, use_id=False):
@@ -126,4 +143,27 @@ class Screening(db.Model):
             "price": self.price,
             "screening_date": self.screening_date.strftime("%Y-%m-%d"),
             "start_time": self.start_time.strftime("%H:%M:%S"),
+            "end_time": self.end_time.strftime("%H:%M:%S"),
         }
+
+    @validates("price")
+    def validate_price(self, key, price):
+        if price <= 0:
+            raise AssertionError("Price must be a positive number")
+
+        return price
+
+    @validates("screening_date")
+    def validate_screening_date(self, key, screening_date):
+        if screening_date <= datetime.datetime.now().strftime("%Y-%m-%d"):
+            raise AssertionError("You can schedule screening tomorrow or later")
+
+        return screening_date
+
+    @validates("start_time")
+    def validate_start_time(self, key, start_time):
+        if start_time < working_day_start or start_time > working_day_end:
+            raise AssertionError(f"Screening can start between {working_day_start} and {working_day_end}")
+
+        return start_time
+
