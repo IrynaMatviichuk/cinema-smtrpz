@@ -12,6 +12,9 @@ def create_app(config_name):
     app.config.from_object(app_config[config_name])
     db.init_app(app)
 
+    from .genre_service import genre_service as genre_service_blueprint
+    app.register_blueprint(genre_service_blueprint, url_prefix="/genre")
+
     from .movie_service import movie_service as movie_service_blueprint
     app.register_blueprint(movie_service_blueprint, url_prefix="/movie")
 

@@ -2,7 +2,7 @@ from flask import jsonify, request
 
 from . import movie_service
 from .. import db
-from ..models import Movie
+from ..models import Genre, Movie
 
 
 @movie_service.route("/select/all", methods=["GET"])
@@ -14,10 +14,12 @@ def select_all():
 @movie_service.route("/insert", methods=["POST"])
 def insert():
     movie_data = request.get_json()
+    genre = Genre.query.get_or_404(movie_data.get("genre_id_fk"))
     movie = Movie(
         title=movie_data.get("title"),
         duration=movie_data.get("duration"),
-        genre=movie_data.get("genre"),
+        genre_id_fk=genre.genre_id,
+        description=movie_data.get("description"),
     )
     db.session.add(movie)
     db.session.commit()
@@ -30,7 +32,7 @@ def update(movie_id):
     movie_data = request.get_json()
     movie = Movie.query.get_or_404(movie_id)
     movie.duration = movie_data.get("duration", movie.duration)
-    movie.genre = movie_data.get("genre", movie.genre)
+    # movie.genre = movie_data.get("genre", movie.genre)
     db.session.commit()
 
     return jsonify(movie.to_dict())
