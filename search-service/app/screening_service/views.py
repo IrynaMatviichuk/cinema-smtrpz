@@ -9,10 +9,6 @@ from ..models import Screening, Movie, Auditorium
 
 @screening_service.route("/select/all", methods=["GET"])
 def select_all():
-    scr = Screening.query.get(2)
-    print("\n\n\n", scr.start_time)
-    print(type(scr.start_time))
-
     all_screenings = [screening.to_dict() for screening in Screening.query.all()]
     return jsonify(all_screenings)
 
