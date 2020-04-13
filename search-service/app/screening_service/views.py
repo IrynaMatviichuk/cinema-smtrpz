@@ -27,12 +27,19 @@ def insert():
         end_time = (
             datetime.strptime(screening_data.get("start_time"), "%H:%M:%S") + 
             timedelta(minutes=movie.duration)
-        ),
+        ).time(),
     )
-    db.session.add(screening)
-    db.session.commit()
 
-    return jsonify(screening.to_dict())
+    if screening.has_overlaps():
+        return jsonify({
+            "errors": [{
+                "screening_time": "this screening overlaps with another screening in this auditorium"
+            }]
+        })
+    else:
+        db.session.add(screening)
+        db.session.commit()
+        return jsonify(screening.to_dict())
 
 
 @screening_service.route("/update/<int:screening_id>", methods=["POST"])

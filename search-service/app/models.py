@@ -82,6 +82,7 @@ class Auditorium(db.Model):
     auditorium_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True, nullable=False)
     screenings = db.relationship("Screening", backref="auditorium", lazy=False)
+    seats = db.relationship("Seat", backref="auditorium", lazy=False)
 
     def __init__(self, name):
         self.name = name
@@ -89,10 +90,13 @@ class Auditorium(db.Model):
     def __repr__(self):
         return f"<Auditorium:(auditorium_id={self.auditorium_id}, name={self.name})>"
 
-    def to_dict(self):
+    def to_dict(self, include_seats=False):
         return {
             "auditorium_id": self.auditorium_id,
             "name": self.name,
+            "seats": [
+                seat.to_dict(use_id=True) for seat in self.seats
+            ] if include_seats else [],
         }
 
     @validates("name")
@@ -120,6 +124,7 @@ class Screening(db.Model):
     screening_date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
+    bookings = db.relationship("Booking", backref="screening", lazy=False)
 
     def __init__(self, movie_id_fk, auditorium_id_fk, price, screening_date, start_time, end_time):
         self.movie_id_fk = movie_id_fk
@@ -146,6 +151,18 @@ class Screening(db.Model):
             "end_time": self.end_time.strftime("%H:%M:%S"),
         }
 
+    def has_overlaps(self):
+        overlaps_number = Screening.query.filter_by(
+            auditorium_id_fk=self.auditorium_id_fk,
+            screening_date=self.screening_date
+        ).filter(
+            Screening.start_time.between(self.start_time, self.end_time) |
+            Screening.end_time.between(self.start_time, self.end_time) |
+            ((Screening.start_time <= self.start_time) & (Screening.end_time >= self.end_time))
+        ).count()
+
+        return overlaps_number > 0
+
     @validates("price")
     def validate_price(self, key, price):
         if price <= 0:
@@ -167,3 +184,80 @@ class Screening(db.Model):
 
         return start_time
 
+
+class Seat(db.Model):
+    __tablename__ = "seat"
+
+    seat_id = db.Column(db.Integer, primary_key=True)
+    auditorium_id_fk = db.Column(db.Integer, db.ForeignKey("auditorium.auditorium_id"), nullable=False)
+    row = db.Column(db.Integer, nullable=False)
+    number = db.Column(db.Integer, nullable=False)
+    bookings = db.relationship("Booking", backref="seat", lazy=False)
+
+    def __repr__(self):
+        return (
+            f"<Seat: (seat_id={self.seat_id}, auditorium_id_fk={self.auditorium_id_fk}, "
+            f"row={self.row}, number={self.number})>"
+        )
+
+    def to_dict(self, use_id=False):
+        return {
+            "seat_id": self.seat_id,
+            "auditorium": self.auditorium_id_fk if use_id else self.auditorium.to_dict(),
+            "row": self.row,
+            "number": self.number,
+        }
+
+
+class CinemaUser(db.Model):
+    __tablename__ = "cinema_user"
+
+    cinema_user_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(30), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    firstname = db.Column(db.String(20), nullable=False)
+    lastname = db.Column(db.String(20), nullable=False)
+    bookings = db.relationship("Booking", backref="cinema_user", lazy=False)
+
+    def __repr__(self):
+        return (
+            f"<CinemaUser: (cinema_user_id={self.cinema_user_id}, username={self.username}, "
+            f"password={self.password}, firstname={self.firstname}, lastname={self.lastname})>"
+        )
+    
+    def to_dict(self):
+        return {
+            "cinema_user_id": self.cinema_user_id,
+            "username": self.username,
+            "password": self.password,
+            "firstname": self.firstname,
+            "lastname": self.lastname,
+        }
+
+
+class Booking(db.Model):
+    __tablename__ = "booking"
+
+    booking_id = db.Column(db.Integer, primary_key=True)
+    screening_id_fk = db.Column(db.Integer, db.ForeignKey("screening.screening_id"), nullable=False)
+    cinema_user_id_fk = db.Column(db.Integer, db.ForeignKey("cinema_user.cinema_user_id"), nullable=False)
+    seat_id_fk = db.Column(db.Integer, db.ForeignKey("seat.seat_id"), nullable=False)
+    booking_date = db.Column(db.Date, nullable=False)
+    booking_time = db.Column(db.Time, nullable=False)
+
+    def __repr__(self):
+        return (
+            f"<Booking: (booking_id={self.booking_id}, screening_id_fk={self.screening_id_fk}, "
+            f"cinema_user_id_fk={self.cinema_user_id_fk}, seat_id_fk={self.seat_id_fk}, "
+            f"booking_date={self.booking_date}, booking_time={self.booking_time}"
+        )
+
+    def to_dict(self):
+        return {
+            "booking_id": self.booking_id,
+            "screening_id_fk": self.screening.to_dict(),
+            "cinema_user_id_fk": self.cinema_user.to_dict(),
+            "seat_id_fk": self.seat.to_dict(),
+            "booking_date": self.booking_date.strftime("%Y-%m-%d"),
+            "booking_time": self.booking_time.strftime("%H:%M:%S"),
+        }
