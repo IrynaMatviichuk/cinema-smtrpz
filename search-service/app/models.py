@@ -213,7 +213,7 @@ class CinemaUser(db.Model):
     __tablename__ = "cinema_user"
 
     cinema_user_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(30), nullable=False)
+    username = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
