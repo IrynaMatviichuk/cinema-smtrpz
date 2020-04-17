@@ -218,13 +218,15 @@ class CinemaUser(db.Model):
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
     bookings = db.relationship("Booking", backref="cinema_user", lazy=False)
+    is_admin = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
         return (
-            f"<CinemaUser: (cinema_user_id={self.cinema_user_id}, username={self.username}, "
-            f"password={self.password}, firstname={self.firstname}, lastname={self.lastname})>"
+            f"<CinemaUser: (cinema_user_id={self.cinema_user_id}, "
+            f"username={self.username}, password={self.password}, "
+            f"firstname={self.firstname}, lastname={self.lastname}, is_admin={self.is_admin})>"
         )
-    
+
     def to_dict(self):
         return {
             "cinema_user_id": self.cinema_user_id,
@@ -232,6 +234,7 @@ class CinemaUser(db.Model):
             "password": self.password,
             "firstname": self.firstname,
             "lastname": self.lastname,
+            "is_admin": self.is_admin,
         }
 
 

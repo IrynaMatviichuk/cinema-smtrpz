@@ -3,6 +3,7 @@ from flask import jsonify
 from . import booking_service
 from .. import db
 from .. models import Booking
+from ..check_token import token_required, admin_access
 
 
 @booking_service.route("/select/all", methods=["GET"])
@@ -11,10 +12,21 @@ def select_all():
     return jsonify(all_bookings)
 
 
+@booking_service.route("/select/cinema_user/<int:cinema_user_id>", methods=["GET"])
+# @token_required
+# @admin_access
+def select_cinema_user_bookings(cinema_user_id):
+    cinema_user_bookings = [
+        booking.to_dict() for booking in 
+        Booking.query.filter_by(cinema_user_id_fk=cinema_user_id).all()
+    ]
+    return jsonify(cinema_user_bookings)
+
+
 @booking_service.route("/select/booked/seats/<int:screening_id>", methods=["GET"])
 def select_booked_seats_by_screening(screening_id):
     booked_seats = [
-        seat[0] for seat in
+        seat[0] for seat in 
         Booking.query.filter_by(screening_id_fk=screening_id).with_entities(Booking.seat_id_fk).all()
     ]
     return jsonify(booked_seats)
