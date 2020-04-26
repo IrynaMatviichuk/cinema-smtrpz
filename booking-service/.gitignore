@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+
+# Distribution / packaging
+.Python
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+
+
+# Flask stuff
+instance/
+.webassets-cache
+
+
+# Environments
+.env
+venv/
+
+
+# VS code stuff
+.vscode/
+
+
+# Requests
+*.http
