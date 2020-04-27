@@ -12,6 +12,12 @@ def create_app(config_name):
     app.config.from_object(app_config[config_name])
     db.init_app(app)
 
+    from .models import Genre
+
+    with app.app_context():
+        db.create_all()
+        db.session.commit()
+
     from .genre_service import genre_service as genre_service_blueprint
     app.register_blueprint(genre_service_blueprint, url_prefix="/genre")
 
