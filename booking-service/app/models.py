@@ -164,8 +164,8 @@ class Booking(db.Model):
     screening_id_fk = db.Column(db.Integer, db.ForeignKey("screening.screening_id"), nullable=False)
     cinema_user_id_fk = db.Column(db.Integer, db.ForeignKey("cinema_user.cinema_user_id"), nullable=False)
     seat_id_fk = db.Column(db.Integer, db.ForeignKey("seat.seat_id"), nullable=False)
-    booking_date = db.Column(db.Date, nullable=False)
-    booking_time = db.Column(db.Time, nullable=False)
+    booking_date = db.Column(db.Date, default=datetime.datetime.now().date(), nullable=False)
+    booking_time = db.Column(db.Time, default=datetime.datetime.now().time(), nullable=False)
 
     def __init__(self, screening_id_fk, cinema_user_id_fk, seat_id_fk):
         self.screening_id_fk = screening_id_fk
@@ -179,12 +179,12 @@ class Booking(db.Model):
             f"booking_date={self.booking_date}, booking_time={self.booking_time}"
         )
 
-    def to_dict(self):
+    def to_dict(self, use_id=False):
         return {
             "booking_id": self.booking_id,
-            "screening_id_fk": self.screening.to_dict(),
-            "cinema_user_id_fk": self.cinema_user.to_dict(),
-            "seat_id_fk": self.seat.to_dict(),
+            "screening_id_fk": self.screening_id_fk if use_id else self.screening.to_dict(),
+            "cinema_user_id_fk": self.cinema_user_id_fk if use_id else self.cinema_user.to_dict(),
+            "seat_id_fk": self.seat_id_fk if use_id else self.seat.to_dict(),
             "booking_date": self.booking_date.strftime("%Y-%m-%d"),
             "booking_time": self.booking_time.strftime("%H:%M:%S"),
         }
