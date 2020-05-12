@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: cinema_db
+      PGPORT: 5432
+    ports:
+      - "5432:5432"
+    volumes:
+      - /docker/volumes/cinema/postgres:/var/lib/postgresql/data
+
+  search-service:
+    build:
+      context: search-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+
+  booking-service:
+    build:
+      context: booking-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+
+  authentication-service:
+    build:
+      context: authentication-service
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres
