@@ -1,4 +1,5 @@
-from flask import jsonify, request
+from flask import jsonify, request, Response
+import json
 
 from . import booking
 from .. import db
@@ -22,14 +23,18 @@ def insert():
         cinema_user_id_fk=cinema_user.cinema_user_id,
         seat_id_fk=seat.seat_id,
     )
-    db.session.add(booking)
-    db.session.commit()
 
-    return jsonify(booking.to_dict())
+    if screening.auditorium_id_fk != seat.auditorium_id_fk:
+        return Response(json.dumps({"error": "screening and seat in different auditoriums"}), status=400)
+    else:
+        db.session.add(booking)
+        db.session.commit()
+
+        return jsonify(booking.to_dict())
 
 
 @booking.route("/delete/<int:booking_id>", methods=["DELETE"])
-def d(booking_id):
+def delete(booking_id):
     booking = Booking.query.get_or_404(booking_id)
     db.session.delete(booking)
     db.session.commit()

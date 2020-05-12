@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 from functools import wraps
 
-from flask import jsonify, request, make_response, current_app
+from flask import jsonify, request, make_response, current_app, Response
 import jwt
+import json
 
 from . import authentication
 from .. import db
@@ -66,10 +67,11 @@ def register():
     db.session.add(cinema_user)
     db.session.commit()
 
-    return jsonify({
-        "status": "OK",
-        "message": "registered successfully",
-    })
+    # return jsonify({
+    #     "status": "OK",
+    #     "message": "registered successfully",
+    # })
+    return Response(json.dumps({"message": "registered successfully"}), status=200)
 
 
 @authentication.route("/login", methods=["GET"])
@@ -92,9 +94,9 @@ def login():
 
 
 @authentication.route("/test1/", methods=["GET"])
-@token_required
+# @token_required
 def test1():
-    return jsonify({"test": "successful"})
+    return Response(json.dumps({"status": "successful"}), status=200)
 
 
 @authentication.route("/test2/<int:random_number>", methods=["GET"])

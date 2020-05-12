@@ -12,11 +12,12 @@ def create_app(config_name):
     app.config.from_object(app_config[config_name])
     db.init_app(app)
 
-    # from .booking import booking as booking_blueprint
     from .booking import booking as booking_blueprint
     app.register_blueprint(booking_blueprint, url_prefix="/booking")
 
-    print("\n\n\n")
-    print(app.url_map)
+    @app.route("/url/map", methods=["GET"])
+    def url_map():
+        endpoints = [(rule.endpoint, list(rule.methods), str(rule)) for rule in app.url_map.iter_rules()]
+        return jsonify(endpoints)
 
     return app
