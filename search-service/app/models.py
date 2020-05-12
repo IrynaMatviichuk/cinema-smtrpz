@@ -217,8 +217,8 @@ class CinemaUser(db.Model):
     password = db.Column(db.String(100), nullable=False)
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
     bookings = db.relationship("Booking", backref="cinema_user", lazy=False)
-    is_admin = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
         return (
@@ -245,8 +245,8 @@ class Booking(db.Model):
     screening_id_fk = db.Column(db.Integer, db.ForeignKey("screening.screening_id"), nullable=False)
     cinema_user_id_fk = db.Column(db.Integer, db.ForeignKey("cinema_user.cinema_user_id"), nullable=False)
     seat_id_fk = db.Column(db.Integer, db.ForeignKey("seat.seat_id"), nullable=False)
-    booking_date = db.Column(db.Date, nullable=False)
-    booking_time = db.Column(db.Time, nullable=False)
+    booking_date = db.Column(db.Date, default=datetime.datetime.now().date(), nullable=False)
+    booking_time = db.Column(db.Time, default=datetime.datetime.now().time(), nullable=False)
 
     def __repr__(self):
         return (

@@ -137,7 +137,7 @@ class CinemaUser(db.Model):
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
     bookings = db.relationship("Booking", backref="cinema_user", lazy=False)
-    is_admin = db.Column(db.Boolean, nullable=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
         return (
