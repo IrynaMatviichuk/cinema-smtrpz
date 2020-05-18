@@ -7,7 +7,7 @@ from ..models import Auditorium
 
 @auditorium_service.route("/select/all", methods=["GET"])
 def select_all():
-    all_auditoriums = [auditorium.to_dict() for auditorium in Auditorium.query.all()]
+    all_auditoriums = [auditorium.to_dict(include_seats=True) for auditorium in Auditorium.query.all()]
     return jsonify(all_auditoriums)
 
 
