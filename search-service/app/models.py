@@ -113,9 +113,9 @@ class Auditorium(db.Model):
 class Screening(db.Model):
     #TODO: unique constraint validation
     __tablename__ = "screening"
-    __table_args__ = (
-        db.UniqueConstraint("auditorium_id_fk", "screening_date", "start_time", name="unique_screening"),
-    )
+    # __table_args__ = (
+    #     db.UniqueConstraint("auditorium_id_fk", "screening_date", "start_time", name="unique_screening"),
+    # )
 
     screening_id = db.Column(db.Integer, primary_key=True)
     movie_id_fk = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), nullable=False)
