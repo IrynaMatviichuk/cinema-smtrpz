@@ -25,14 +25,14 @@ services:
     depends_on:
       - postgres
 
-  booking-service:
-    build:
-      context: booking-service
-      dockerfile: Dockerfile
-    ports:
-      - "8082:8082"
-    depends_on:
-      - postgres
+  # booking-service:
+  #   build:
+  #     context: booking-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8082:8082"
+  #   depends_on:
+  #     - postgres
 
   authentication-service:
     build:
@@ -42,3 +42,13 @@ services:
       - "8083:8083"
     depends_on:
       - postgres
+
+  # client:
+  #   build:
+  #     context: client
+  #     dockerfile: Dockerfile
+  #   stdin_open: true
+  #   # volumes:
+  #     # - "./client:/app/"
+  #   ports:
+  #     - "3000:3000"

@@ -1,30 +1,38 @@
 from datetime import datetime, timedelta
 from functools import wraps
+from json import dumps
 
-from flask import jsonify, request, make_response, current_app, Response
 import jwt
-import json
+from flask import Response, current_app, jsonify, make_response, request, g
 
-from . import authentication
-from .. import db
-from ..models import CinemaUser
+from app import db
+from app.authentication import authentication
+from app.models import CinemaUser
+from app.validators.user_login_validator import UserLoginValidator
+from app.validators.user_registration_validator import UserRegistrationValidator
+from config import Config
 
 
-def token_required(f):
+def login_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         token = None
-        if "x-access-tokens" in request.headers:
-            token = request.headers["x-access-tokens"]
+        if "Authorization" in request.headers:
+            token = request.headers["Authorization"]
 
         if not token:
-            return jsonify({"messane": "token is missing"})
+            return Response(dumps({
+                "general": "no token"
+            }), status=401)
 
         try:
-            data = jwt.decode(token, current_app.config["SECRET_KEY"])
+            data = jwt.decode(token.split(" ")[1], current_app.config["SECRET_KEY"])
             current_cinema_user = CinemaUser.query.filter_by(cinema_user_id=data.get("public_id")).first()
+            g.current_user = current_cinema_user.to_dict()
         except:
-            return jsonify({"message": "token is invalid"})
+            return Response(dumps({
+                "general": "invalid token"
+            }), status=401)
 
         return f(*args, **kwargs)
     return decorator
@@ -56,6 +64,10 @@ def admin_access(f):
 @authentication.route("/register", methods=["POST"])
 def register():
     auth_data = request.get_json()
+    is_valid, errors = UserRegistrationValidator().validate(auth_data)
+    if not is_valid:
+        return Response(dumps({error: ", ".join(values) for (error, values) in errors.items()}), status=400)
+
     cinema_user = CinemaUser(
         username=auth_data.get("username"),
         password=auth_data.get("password"),
@@ -67,39 +79,46 @@ def register():
     db.session.add(cinema_user)
     db.session.commit()
 
-    # return jsonify({
-    #     "status": "OK",
-    #     "message": "registered successfully",
-    # })
-    return Response(json.dumps({"message": "registered successfully"}), status=200)
+    token = jwt.encode({
+        "public_id": cinema_user.cinema_user_id,
+        "exp": datetime.utcnow() + timedelta(minutes=int(Config.TOKEN_EXP)),
+    }, current_app.config["SECRET_KEY"])
+
+    return  Response(dumps({
+        "message": "registered successfully",
+        "token": token.decode("UTF-8")
+    }), status=200)
 
 
-@authentication.route("/login", methods=["GET"])
+@authentication.route("/login", methods=["POST"])
 def login():
-    auth = request.authorization
-    if not auth or not auth.username or not auth.password:
-        return make_response("could not verify", 401, {"WWW.Authentication": "login required"})
-    
-    cinema_user = CinemaUser.query.filter_by(username=auth.username).first()
+    login_data = request.get_json()
+    is_valid, errors = UserLoginValidator().validate(login_data)
+    if not is_valid:
+        return Response(dumps({error: ", ".join(values) for (error, values) in errors.items()}), status=400)
 
-    if cinema_user.verify_password(auth.password):
+    cinema_user = CinemaUser.query.filter_by(username=login_data.get("username")).first()
+
+    if cinema_user is None:
+        return Response(dumps({"username": "no user with such username"}), status=401)
+
+    if cinema_user.verify_password(login_data.get("password")):
         token = jwt.encode({
             "public_id": cinema_user.cinema_user_id,
-            "exp": datetime.utcnow() + timedelta(minutes=5),
+            "exp": datetime.utcnow() + timedelta(minutes=int(Config.TOKEN_EXP)),
         }, current_app.config["SECRET_KEY"])
 
-        return jsonify({"token": token.decode("UTF-8")})
+        return  Response(dumps({
+            "message": "logined successfully",
+            "token": token.decode("UTF-8")
+        }), status=200)
+    else:
+        return Response(dumps({
+            "general": "invalid credentials"
+        }), status=401)
 
-    return make_response("could not verify", 401, {"WWW.Authentication": "login required"})
 
-
-@authentication.route("/test1/", methods=["GET"])
-# @token_required
-def test1():
-    return Response(json.dumps({"status": "successful"}), status=200)
-
-
-@authentication.route("/test2/<int:random_number>", methods=["GET"])
-@token_required
-def test2(random_number):
-    return jsonify({"test": "successful", "random_number": random_number})
+@authentication.route("/user", methods=["GET"])
+@login_required
+def get_user():
+    return Response(dumps(g.current_user), status=200)
