@@ -1,0 +1,17 @@
+html,
+body {
+    background-color: rgb(245, 245, 245);
+}
+
+.container {
+    margin: 80px auto 0 auto;
+    max-width: 1200px;
+}
+
+.nav-container {
+    margin: auto;
+}
+
+a {
+    text-decoration: none;
+}
