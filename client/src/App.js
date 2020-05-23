@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import './App.css';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
@@ -8,7 +9,8 @@ import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 // Redux
 import { Provider } from 'react-redux';
 import store from './redux/store';
-
+import { SET_AUTHENTICATED } from './redux/types';
+import { logoutUser, getUserData } from './redux/actions/userActions';
 
 // Components
 import Navbar from './components/Navbar';
@@ -38,20 +40,17 @@ const theme = createMuiTheme({
 });
 
 
-let authenticated;
 const token = localStorage.token;
 if (token) {
   const decodedToken = jwtDecode(token);
-  console.log(decodedToken);
   if (decodedToken.exp * 1000 < Date.now()) {
-    console.log(Date.now());
-    console.log('no token');
-    // window.location.href = "/login";
-    authenticated = false;
+    store.dispatch(logoutUser());
+    console.log('here', window.location.href);
+    window.location.href = "/login";
   } else {
-    console.log(Date.now());
-    console.log('authenticated');
-    authenticated = true;
+    store.dispatch({ type: SET_AUTHENTICATED });
+    axios.defaults.headers.common['Authorization'] = token;
+    store.dispatch(getUserData());
   }
 }
 
@@ -70,13 +69,11 @@ class App extends Component {
                     exact
                     path="/login"
                     component={login}
-                    authenticated={authenticated}
                   />
                   <AuthRoute
                     exact
                     path="/signup"
                     component={signup}
-                    authenticated={authenticated}
                   />
                 </Switch>
               </div>

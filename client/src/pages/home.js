@@ -3,6 +3,7 @@ import axios from 'axios';
 import Grid from '@material-ui/core/Grid';
 
 import Screening from '../components/Screening';
+import Profile from '../components/Profile';
 
 
 class home extends Component {
@@ -28,12 +29,17 @@ class home extends Component {
         this.state.screenings.map(screening => <Screening key={screening.screening_id} screening={screening}/>)
         ) : <p>Loading ...</p>;
         return (
-            <Grid container spacing={10}>
+            <Grid container spacing={16}>
+                <Grid item sm/>
+                <Grid item sm/>
                 <Grid item sm/>
                 <Grid item sm={8} xs={12}>
                     {screenings}
                 </Grid>
-                <Grid item sm/>
+                {/* <Grid item sm/> */}
+                <Grid item sm={4} xs={12}>
+                    <Profile/>
+                </Grid>
             </Grid>
         );
     }

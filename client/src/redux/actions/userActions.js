@@ -1,30 +1,57 @@
-import { SET_USER, SET_ERRORS, CLEAR_ERRORS, LOADING_UI } from '../types';
+import { SET_USER, SET_ERRORS, CLEAR_ERRORS, LOADING_UI, SET_UNAUTHENTICATED, LOADING_USER } from '../types';
 import axios from 'axios';
 
 
 export const loginUser = (userData, history) => (dispatch) => {
     dispatch({ type: LOADING_UI });
-    axios.post('/auth/login', userData)
+    axios
+        .post('/auth/login', userData)
         .then(res => {
-            const token = `Bearer ${res.data.token}`;
-            localStorage.setItem('token', token);
-            axios.default.headers.common['Authorization'] = token;
+            setAuthorizationHeader(res.data.token);
             dispatch(getUserData());
             dispatch({ type: CLEAR_ERRORS });
             history.push('/');
         })
         .catch(err => {
-            // console.log(err);
+            console.log(err);
             dispatch({
                 type: SET_ERRORS,
                 payload: err.response.data
             })
         });
+};
+
+
+export const signupUser = (newUserData, history) => (dispatch) => {
+    dispatch({ type: LOADING_UI });
+    axios
+        .post('/auth/register', newUserData)
+        .then(res => {
+            setAuthorizationHeader(res.data.token);
+            dispatch(getUserData());
+            dispatch({ type: CLEAR_ERRORS });
+            history.push('/');
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_ERRORS,
+                payload: err.response.data
+            })
+        });
+};
+
+
+export const logoutUser = () => (dispatch) => {
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
+    dispatch({ type: SET_UNAUTHENTICATED });
 }
 
 
 export const getUserData = () => (dispatch) => {
-    axios.get('/auth/user')
+    dispatch({ type: LOADING_USER });
+    axios
+        .get('/auth/user')
         .then(res => {
             dispatch({
                 type: SET_USER,
@@ -34,4 +61,11 @@ export const getUserData = () => (dispatch) => {
         .catch(err => {
             console.log(err);
         })
+};
+
+
+const setAuthorizationHeader = (rawToken) => {
+    const token = `Bearer ${rawToken}`;
+    localStorage.setItem('token', token);
+    axios.defaults.headers.common['Authorization'] = token;
 }

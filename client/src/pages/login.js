@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import withStyles from '@material-ui/core/styles/withStyles';
 import PropTypes from 'prop-types';
 import AppIcon from '../images/popcorn.png';
-import axios from 'axios';
 
 // Redux
 import { connect } from 'react-redux';
@@ -57,6 +56,12 @@ class login extends Component {
             username: '',
             password: '',
             errors: {}
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.UI.errors) {
+            this.setState({ errors: nextProps.UI.errors });
         }
     }
 

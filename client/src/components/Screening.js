@@ -39,6 +39,8 @@ class Screening extends Component {
                 start_time }
             } = this.props;
 
+        // const deleteButton = authenticated && is
+
         return (
             <Card variant="outlined">
                 {/* <CardMedia // image={us} 
@@ -50,6 +52,7 @@ class Screening extends Component {
                     <Typography variant="body2" color="textSecondary">Duration: {duration} min</Typography>
                     <Typography variant="body2" color="textSecondary">Genre: {name}</Typography>
                     <Typography variant="body1">Price: {price} UAH</Typography>
+                    {delete}
                 </CardContent>
             </Card>
         );
