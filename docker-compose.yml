@@ -43,6 +43,15 @@ services:
     depends_on:
       - postgres
 
+  feedback-service:
+    build:
+      context: feedback-service
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgres
+
   # client:
   #   build:
   #     context: client

@@ -49,12 +49,12 @@ class Movie(db.Model):
             f"genre={self.genre_if_fk}, description={self.description})>"
         )
 
-    def to_dict(self):
+    def to_dict(self, use_id=False):
         return {
             "movie_id": self.movie_id,
             "title": self.title,
             "duration": self.duration,
-            "genre": self.genre.to_dict(),
+            "genre": self.genre_id_fk if use_id else self.genre.to_dict(),
             "description": self.description
         }
 

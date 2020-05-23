@@ -1,40 +1,33 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 
 import Screening from '../components/Screening';
 import Profile from '../components/Profile';
 
+// Redux
+import { connect } from 'react-redux';
+import { getScreenings } from '../redux/actions/dataActions';
+
 
 class home extends Component {
-    constructor() {
-        super();
-        this.state = {
-            screenings: null
-        }
-    }
-
     componentDidMount() {
-        axios.get('/screening/select/all')
-            .then(res => {
-                this.setState({
-                    screenings: res.data
-                })
-            })
-            .catch(err => console.log(err));
+        this.props.getScreenings();
     }
 
     render() {
-        let screenings = this.state.screenings ? (
-        this.state.screenings.map(screening => <Screening key={screening.screening_id} screening={screening}/>)
-        ) : <p>Loading ...</p>;
+        const { screenings, loading } = this.props.data;
+        let screeningsMarup = ! loading ? (
+        screenings.map(screening => <Screening key={screening.screening_id} screening={screening}/>)
+        ) : (<p>Loading ...</p>);
         return (
             <Grid container spacing={16}>
                 <Grid item sm/>
                 <Grid item sm/>
                 <Grid item sm/>
                 <Grid item sm={8} xs={12}>
-                    {screenings}
+                    {screeningsMarup}
                 </Grid>
                 {/* <Grid item sm/> */}
                 <Grid item sm={4} xs={12}>
@@ -46,4 +39,15 @@ class home extends Component {
 }
 
 
-export default home;
+home.propTypes = {
+    getScreenings: PropTypes.func.isRequired,
+    data: PropTypes.object.isRequired
+}
+
+
+const mapStateToProps = state => ({
+    data: state.data
+})
+
+
+export default connect(mapStateToProps, { getScreenings })(home);

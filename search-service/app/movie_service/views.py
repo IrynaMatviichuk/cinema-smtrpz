@@ -44,5 +44,5 @@ def delete(movie_id):
     db.session.delete(movie)
     db.session.commit()
 
-    return jsonify(movie.to_dict())
+    return jsonify(movie.to_dict(use_id=True))
 

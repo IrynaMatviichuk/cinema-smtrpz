@@ -61,6 +61,17 @@ create TABLE booking(
 );
 
 
+create TABLE feedback(
+  feedback_id serial PRIMARY key,
+  score INTEGER not NULL CHECK (score >= 1 and score <= 5),
+  review TEXT not NULL,
+  feedback_date date not NULL DEFAULT now()::date,
+  feedback_time time not NULL DEFAULT now()::TIME,
+  movie_id_fk INTEGER not NULL REFERENCES movie(movie_id),
+  cinema_user_id_fk INTEGER not NULL REFERENCES cinema_user(cinema_user_id)
+);
+
+
 insert into genre(name) VALUES
 ('action'),
 ('animation'),

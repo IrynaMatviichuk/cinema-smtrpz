@@ -1,12 +1,18 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import withStyles from '@material-ui/core/styles/withStyles';
+import CustomButton from '../util/CustomButton';
 
 // MUI
 import Card from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
+
+// Icons
+import ChatIcon from '@material-ui/icons/Chat';
 
 
 const styles = {
@@ -36,8 +42,12 @@ class Screening extends Component {
                 price,
                 screening_date,
                 screening_id,
-                start_time }
-            } = this.props;
+                start_time
+            },
+            user: {
+                authenticated
+            }
+        } = this.props;
 
         // const deleteButton = authenticated && is
 
@@ -52,11 +62,32 @@ class Screening extends Component {
                     <Typography variant="body2" color="textSecondary">Duration: {duration} min</Typography>
                     <Typography variant="body2" color="textSecondary">Genre: {name}</Typography>
                     <Typography variant="body1">Price: {price} UAH</Typography>
-                    {delete}
+                    <CustomButton tip="feedbacks">
+                        <ChatIcon color="primary"/>
+                    </CustomButton>
+                    {/* <span>{feedbackCount} feedback</span> */}
                 </CardContent>
             </Card>
         );
     }
 }
 
-export default withStyles(styles)(Screening);
+
+Screening.propTypes = {
+    user: PropTypes.object.isRequired,
+    screening:PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired
+}
+
+
+const mapStateToProps = state => ({
+    user: state.user
+})
+
+
+const mapActionsToProps = {
+
+}
+
+
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Screening));
