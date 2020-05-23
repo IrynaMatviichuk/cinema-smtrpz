@@ -1,9 +1,10 @@
-from flask import jsonify, request, Response
 import json
 
-from . import booking
-from .. import db
-from ..models import Booking, Screening, CinemaUser, Seat
+from flask import Response, jsonify, request
+
+from app import db
+from app.booking import booking
+from app.models import Booking, CinemaUser, Screening, Seat
 
 
 @booking.route("/select/all", methods=["GET"])

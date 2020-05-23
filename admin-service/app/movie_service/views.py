@@ -1,14 +1,16 @@
-from json import dumps
 from functools import wraps
+from json import dumps
 
 from flask import Response, jsonify, request
 
 from app import db
-from app.movie_service import movie_service
-from app.models import Genre, Movie, CinemaUser
 from app.access import admin_access
-from app.validators.movie_validator import MovieCreateValidator, MovieUpdateValidator
-
+from app.models import CinemaUser, Genre, Movie
+from app.movie_service import movie_service
+from app.validators.movie_validator import (
+    MovieCreateValidator,
+    MovieUpdateValidator
+)
 
 
 @movie_service.route("/insert", methods=["POST"])

@@ -3,12 +3,12 @@ from functools import wraps
 from json import dumps
 
 import jwt
-from flask import Response, current_app, jsonify, make_response, request, g
+from flask import Response, current_app, g, jsonify, make_response, request
 
 from app import db
-from app.access import user_access, admin_access
+from app.access import admin_access, user_access
 from app.feedback_service import feedback_service
-from app.models import Feedback, Movie, CinemaUser
+from app.models import CinemaUser, Feedback, Movie
 
 
 @feedback_service.route("/select/all", methods=["GET"]) 

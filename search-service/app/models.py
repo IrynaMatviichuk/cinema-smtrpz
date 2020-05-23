@@ -1,10 +1,10 @@
 import datetime
 
-from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import validates
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
-from config import working_day_start, working_day_end
+from config import working_day_end, working_day_start
 
 
 class Genre(db.Model):
@@ -26,9 +26,6 @@ class Genre(db.Model):
 
 class Movie(db.Model):
     __tablename__ = "movie"
-    # __table_args__ = (
-    #     db.CheckConstraint("duration >= 60 and duration <= 240"),
-    # )
 
     movie_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), unique=True, nullable=False)

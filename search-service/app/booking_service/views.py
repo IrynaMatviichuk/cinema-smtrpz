@@ -1,9 +1,9 @@
 from flask import jsonify
 
 from app import db
+from app.access import admin_access, user_access
 from app.booking_service import booking_service
 from app.models import Booking
-from app.access import user_access, admin_access
 
 
 @admin_access

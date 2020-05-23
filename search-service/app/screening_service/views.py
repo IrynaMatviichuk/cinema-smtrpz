@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 from flask import jsonify, request
 
 from app import db
-from app.screening_service import screening_service
 from app.models import Screening
+from app.screening_service import screening_service
 
 
 @screening_service.route("/select/all", methods=["GET"])

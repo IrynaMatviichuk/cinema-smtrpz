@@ -4,10 +4,13 @@ from json import dumps
 from flask import Response, jsonify, request
 
 from app import db
-from app.screening_service import screening_service
-from app.models import Screening, Movie, Auditorium
 from app.access import admin_access
-from app.validators.screening_validator import ScreeningCreateValidator, ScreeningUpdateValidator
+from app.models import Auditorium, Movie, Screening
+from app.screening_service import screening_service
+from app.validators.screening_validator import (
+    ScreeningCreateValidator,
+    ScreeningUpdateValidator
+)
 
 
 @screening_service.route("/insert", methods=["POST"])

@@ -1,8 +1,8 @@
 from flask import jsonify, request
 
 from app import db
-from app.movie_service import movie_service
 from app.models import Movie
+from app.movie_service import movie_service
 
 
 @movie_service.route("/select/all", methods=["GET"])

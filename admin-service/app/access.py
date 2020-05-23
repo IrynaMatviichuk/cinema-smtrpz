@@ -2,7 +2,7 @@ from functools import wraps
 from json import dumps
 
 import jwt
-from flask import Response, current_app, jsonify, make_response, request, g
+from flask import Response, current_app, g, jsonify, make_response, request
 
 from app.models import CinemaUser
 

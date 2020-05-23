@@ -1,7 +1,7 @@
 from datetime import datetime
-from cerberus import Validator
 
-from config import working_day_start, working_day_end
+from cerberus import Validator
+from config import working_day_end, working_day_start
 
 
 class ScreeningCreateValidator:
