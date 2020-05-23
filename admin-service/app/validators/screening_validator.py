@@ -36,16 +36,13 @@ class ScreeningCreateValidator:
     def validate(self, new_screening):
         is_valid = self.validator.validate(new_screening)
         errors = self.validator.errors
-        print("\n\n\nvalidate", flush=True)
         if new_screening.get("screening_date") <= datetime.now().strftime("%Y-%m-%d"):
-            print("\n\n\nhere date", flush=True)
             is_valid = False
             errors.update({
                 "screening_date": ["can only schedule screening tomorrow or later"]
             })
 
         if new_screening.get("start_time") < working_day_start or new_screening.get("start_time") > working_day_end:
-            print("\n\n\nhere time", flush=True)
             is_valid = False
             errors.update({
                 "start_time": [f"screening can start between {working_day_start} and {working_day_end}"]
