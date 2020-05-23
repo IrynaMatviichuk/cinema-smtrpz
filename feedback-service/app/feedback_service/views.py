@@ -3,12 +3,12 @@ from functools import wraps
 from json import dumps
 
 import jwt
-from flask import Response, current_app, jsonify, make_response, request, g
+from flask import Response, current_app, g, jsonify, make_response, request
 
 from app import db
-from app.access import user_access, admin_access
+from app.access import admin_access, user_access
 from app.feedback_service import feedback_service
-from app.models import Feedback, Movie, CinemaUser
+from app.models import CinemaUser, Feedback, Movie
 
 
 @feedback_service.route("/select/all", methods=["GET"]) 
@@ -28,8 +28,8 @@ def select_by_movie(movie_id):
     return jsonify(feedback)
 
 
-@user_access
 @feedback_service.route("/insert", methods=["POST"])
+@user_access
 def insert():
     feedback_data = request.get_json()
     movie = Movie.query.get_or_404(feedback_data.get("movie_id_fk"))
@@ -52,8 +52,8 @@ def insert():
 #     pass
 
 
-@user_access
 @feedback_service.route("/delete/<int:feedback_id>", methods=["DELETE"])
+@user_access
 def delete(feedback_id):
     feedback = Feedback.query.get_or_404(feedback_id)
     db.session.delete(feedback)

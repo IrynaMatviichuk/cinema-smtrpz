@@ -1,8 +1,8 @@
 from flask import jsonify
 
-from . import genre_service
-from .. import db
-from ..models import Genre
+from app import db
+from app.genre_service import genre_service
+from app.models import Genre
 
 
 @genre_service.route("/select/all", methods=["GET"])

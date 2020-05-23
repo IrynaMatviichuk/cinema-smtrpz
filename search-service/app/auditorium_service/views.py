@@ -1,8 +1,8 @@
 from flask import jsonify
 
-from . import auditorium_service
-from .. import db
-from ..models import Auditorium
+from app import db
+from app.auditorium_service import auditorium_service
+from app.models import Auditorium
 
 
 @auditorium_service.route("/select/all", methods=["GET"])

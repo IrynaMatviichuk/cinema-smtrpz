@@ -1,7 +1,7 @@
 import datetime
 
-from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import validates
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
 
@@ -45,7 +45,6 @@ class Movie(db.Model):
     genre_id_fk = db.Column(db.Integer, db.ForeignKey("genre.genre_id"), nullable=False)
     description = db.Column(db.Text, nullable=False)
     feedbacks = db.relationship("Feedback", backref="movie", lazy=False)
-    # screenings = db.relationship("Screening", backref="movie", lazy=False)
 
     def __init__(self, title, duration, genre_id_fk, description):
         self.title = title
@@ -79,7 +78,6 @@ class CinemaUser(db.Model):
     lastname = db.Column(db.String(20), nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
     feedbacks = db.relationship("Feedback", backref="cinema_user", lazy=False)
-    # bookings = db.relationship("Booking", backref="cinema_user", lazy=False)
 
     def __repr__(self):
         return (

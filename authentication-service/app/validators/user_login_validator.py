@@ -17,5 +17,5 @@ class UserLoginValidator:
             },
         }
 
-    def validate(self, userData):
-        return self.validator.validate(userData), self.validator.errors
+    def validate(self, user_data):
+        return self.validator.validate(user_data), self.validator.errors

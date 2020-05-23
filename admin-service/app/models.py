@@ -4,6 +4,7 @@ from sqlalchemy.orm import validates
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db
+from config import working_day_end, working_day_start
 
 
 class Genre(db.Model):
@@ -33,18 +34,24 @@ class Movie(db.Model):
     description = db.Column(db.Text, nullable=False)
     screenings = db.relationship("Screening", backref="movie", lazy=False)
 
+    def __init__(self, title, duration, genre_id_fk, description):
+        self.title = title
+        self.duration = duration
+        self.genre_id_fk = genre_id_fk
+        self.description = description
+
     def __repr__(self):
         return (
             f"<Movie:(movie_id={self.movie_id}, title={self.title}, duration={self.duration}, "
             f"genre={self.genre_if_fk}, description={self.description})>"
         )
 
-    def to_dict(self):
+    def to_dict(self, use_id=False):
         return {
             "movie_id": self.movie_id,
             "title": self.title,
             "duration": self.duration,
-            "genre": self.genre.to_dict(),
+            "genre": self.genre_id_fk if use_id else self.genre.to_dict(),
             "description": self.description
         }
 
@@ -71,11 +78,7 @@ class Auditorium(db.Model):
 
 
 class Screening(db.Model):
-    #TODO: unique constraint validation
     __tablename__ = "screening"
-    __table_args__ = (
-        db.UniqueConstraint("auditorium_id_fk", "screening_date", "start_time", name="unique_screening"),
-    )
 
     screening_id = db.Column(db.Integer, primary_key=True)
     movie_id_fk = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), nullable=False)
@@ -85,6 +88,14 @@ class Screening(db.Model):
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
     bookings = db.relationship("Booking", backref="screening", lazy=False)
+
+    def __init__(self, movie_id_fk, auditorium_id_fk, price, screening_date, start_time, end_time):
+        self.movie_id_fk = movie_id_fk
+        self.auditorium_id_fk = auditorium_id_fk
+        self.price = price
+        self.screening_date = screening_date
+        self.start_time = start_time
+        self.end_time = end_time
 
     def __repr__(self):
         return (
@@ -102,6 +113,33 @@ class Screening(db.Model):
             "start_time": self.start_time.strftime("%H:%M:%S"),
             "end_time": self.end_time.strftime("%H:%M:%S"),
         }
+
+    def has_overlaps(self):
+        overlaps_number = Screening.query.filter_by(
+            auditorium_id_fk=self.auditorium_id_fk,
+            screening_date=self.screening_date
+        ).filter(
+            Screening.start_time.between(self.start_time, self.end_time) |
+            Screening.end_time.between(self.start_time, self.end_time) |
+            ((Screening.start_time <= self.start_time) & (Screening.end_time >= self.end_time))
+        ).count()
+
+        return overlaps_number > 0
+
+    def has_update_overlaps(self):
+        overlaps_number = Screening.query.filter(
+            Screening.screening_id != self.screening_id
+        ).filter_by(
+            auditorium_id_fk=self.auditorium_id_fk,
+            screening_date=self.screening_date
+        ).filter(
+            Screening.start_time.between(self.start_time, self.end_time) |
+            Screening.end_time.between(self.start_time, self.end_time) |
+            ((Screening.start_time <= self.start_time) & (Screening.end_time >= self.end_time))
+        ).count()
+
+        return overlaps_number > 0
+
 
 
 class Seat(db.Model):
@@ -136,8 +174,8 @@ class CinemaUser(db.Model):
     password = db.Column(db.String(100), nullable=False)
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
-    bookings = db.relationship("Booking", backref="cinema_user", lazy=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    bookings = db.relationship("Booking", backref="cinema_user", lazy=False)
 
     def __repr__(self):
         return (
@@ -167,11 +205,6 @@ class Booking(db.Model):
     booking_date = db.Column(db.Date, default=datetime.datetime.now().date(), nullable=False)
     booking_time = db.Column(db.Time, default=datetime.datetime.now().time(), nullable=False)
 
-    def __init__(self, screening_id_fk, cinema_user_id_fk, seat_id_fk):
-        self.screening_id_fk = screening_id_fk
-        self.cinema_user_id_fk = cinema_user_id_fk
-        self.seat_id_fk = seat_id_fk
-
     def __repr__(self):
         return (
             f"<Booking: (booking_id={self.booking_id}, screening_id_fk={self.screening_id_fk}, "
@@ -179,22 +212,12 @@ class Booking(db.Model):
             f"booking_date={self.booking_date}, booking_time={self.booking_time}"
         )
 
-    def to_dict(self, use_id=False):
+    def to_dict(self):
         return {
             "booking_id": self.booking_id,
-            "screening_id_fk": self.screening_id_fk if use_id else self.screening.to_dict(),
-            "cinema_user_id_fk": self.cinema_user_id_fk if use_id else self.cinema_user.to_dict(),
-            "seat_id_fk": self.seat_id_fk if use_id else self.seat.to_dict(),
+            "screening_id_fk": self.screening.to_dict(),
+            "cinema_user_id_fk": self.cinema_user.to_dict(),
+            "seat_id_fk": self.seat.to_dict(),
             "booking_date": self.booking_date.strftime("%Y-%m-%d"),
             "booking_time": self.booking_time.strftime("%H:%M:%S"),
         }
-
-    def seat_in_auditorium(self):
-        return self.seat.auditorium_id_fk == self.screening.auditorium_id_fk
-
-    @validates("cinema_user_id_fk")
-    def validate_cinema_user(self, key, cinema_user_id_fk):
-        if CinemaUser.query.filter_by(cinema_user_id=cinema_user_id_fk).first().is_admin:
-            raise AssertionError("Admin can't book screenings")
-
-        return cinema_user_id_fk
