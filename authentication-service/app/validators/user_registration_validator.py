@@ -43,8 +43,8 @@ class UserRegistrationValidator:
             }
         }
 
-    def validate(self, newUser):
-        is_valid = self.validator.validate(newUser)
+    def validate(self, new_user):
+        is_valid = self.validator.validate(new_user)
         errors = self.validator.errors
         if newUser.get("password") != newUser.get("confirmPassword"):
             is_valid = False

@@ -1,11 +1,12 @@
 from flask import jsonify
 
-from . import booking_service
-from .. import db
-from .. models import Booking
-from ..check_token import token_required, admin_access
+from app import db
+from app.booking_service import booking_service
+from app.models import Booking
+from app.access import user_access, admin_access
 
 
+@admin_access
 @booking_service.route("/select/all", methods=["GET"])
 def select_all():
     all_bookings = [booking.to_dict() for booking in Booking.query.all()]
@@ -13,8 +14,7 @@ def select_all():
 
 
 @booking_service.route("/select/cinema_user/<int:cinema_user_id>", methods=["GET"])
-# @token_required
-# @admin_access
+@user_access
 def select_cinema_user_bookings(cinema_user_id):
     cinema_user_bookings = [
         booking.to_dict() for booking in 

@@ -1,5 +1,5 @@
-from json import dumps
 from functools import wraps
+from json import dumps
 
 import jwt
 from flask import Response, current_app, jsonify, make_response, request, g
@@ -33,8 +33,10 @@ def user_access(f):
 
 
 def admin_access(f):
+    print("\n\n\nhere1")
     @wraps(f)
     def decorator(*args, **kwargs):
+        print("\n\n\nhere2")
         token = None
         if "Authorization" in request.headers:
             token = request.headers["Authorization"]

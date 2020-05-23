@@ -1,5 +1,10 @@
+from json import dumps
+from functools import wraps
+
 import jwt
 from flask import Response, current_app, jsonify, make_response, request, g
+
+from app.models import CinemaUser
 
 
 def user_access(f):

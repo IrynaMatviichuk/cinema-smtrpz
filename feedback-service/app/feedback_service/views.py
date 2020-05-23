@@ -28,8 +28,8 @@ def select_by_movie(movie_id):
     return jsonify(feedback)
 
 
-@user_access
 @feedback_service.route("/insert", methods=["POST"])
+@user_access
 def insert():
     feedback_data = request.get_json()
     movie = Movie.query.get_or_404(feedback_data.get("movie_id_fk"))
@@ -52,8 +52,8 @@ def insert():
 #     pass
 
 
-@user_access
 @feedback_service.route("/delete/<int:feedback_id>", methods=["DELETE"])
+@user_access
 def delete(feedback_id):
     feedback = Feedback.query.get_or_404(feedback_id)
     db.session.delete(feedback)
