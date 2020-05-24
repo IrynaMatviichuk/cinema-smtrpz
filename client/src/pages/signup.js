@@ -93,6 +93,7 @@ class signup extends Component {
     render() {
         const { classes, UI: { loading } } = this.props;
         const { errors } = this.state;
+        console.log(errors);
         return (
             <Grid container className={classes.form}>
                 <Grid item sm/>
@@ -191,6 +192,7 @@ class signup extends Component {
         );
     }
 }
+
 
 signup.propTypes = {
     classes: PropTypes.object.isRequired,

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 
@@ -17,22 +16,25 @@ class home extends Component {
     }
 
     render() {
-        const { screenings, loading } = this.props.data;
-        let screeningsMarup = ! loading ? (
-        screenings.map(screening => <Screening key={screening.screening_id} screening={screening}/>)
+        const { data: { screenings, loading }, authenticated} = this.props;
+        console.log(authenticated);
+        let screeningsMarkup = !loading ? (
+            screenings.map(screening => <Screening key={screening.screening_id} screening={screening} />)
         ) : (<p>Loading ...</p>);
         return (
             <Grid container spacing={16}>
-                <Grid item sm/>
-                <Grid item sm/>
-                <Grid item sm/>
+                {/* <Grid item sm /> */}
+                {/* <Grid item sm /> */}
+                {/* <Grid item sm /> */}
                 <Grid item sm={8} xs={12}>
-                    {screeningsMarup}
+                    {screeningsMarkup}
                 </Grid>
                 {/* <Grid item sm/> */}
-                <Grid item sm={4} xs={12}>
-                    <Profile/>
-                </Grid>
+                {authenticated && (
+                    <Grid item sm={4} xs={12}>
+                        <Profile />
+                    </Grid>
+                )}
             </Grid>
         );
     }
@@ -41,12 +43,14 @@ class home extends Component {
 
 home.propTypes = {
     getScreenings: PropTypes.func.isRequired,
-    data: PropTypes.object.isRequired
+    data: PropTypes.object.isRequired,
+    authenticated: PropTypes.bool.isRequired
 }
 
 
 const mapStateToProps = state => ({
-    data: state.data
+    data: state.data,
+    authenticated: state.user.authenticated
 })
 
 

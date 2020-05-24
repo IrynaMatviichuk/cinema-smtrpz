@@ -39,8 +39,8 @@ def insert():
 
     if screening.has_overlaps():
         return Response(dumps({
-            "start_time": ["this screening overlaps with another screening in this auditorium"]
-        }))
+            "start_time": "this screening overlaps with another screening in this auditorium"
+        }), status=400)
     else:
         db.session.add(screening)
         db.session.commit()
@@ -69,8 +69,8 @@ def update(screening_id):
 
     if screening.has_update_overlaps():
         return Response(dumps({
-            "start_time": ["this screening overlaps with another screening in this auditorium"]
-        }))
+            "start_time": "this screening overlaps with another screening in this auditorium"
+        }), status=400)
     else:
         db.session.commit()
         return jsonify(screening.to_dict())

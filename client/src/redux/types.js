@@ -13,5 +13,9 @@ export const LOADING_DATA = 'LOADING_DATA';
 // Data reducer types
 export const SET_SCREENINGS = 'SET_SCREENINGS';
 export const SET_SCREENING = 'SET_SCREENING';
+export const POST_SCREENING = 'POST_SCREENING';
+export const DELETE_SCREENING = 'DELETE_SCREENING';
+export const SET_MOVIES = 'SET_MOVIES';
+export const SET_AUDITORIUMS = 'SET_AUDITORIUMS';
 export const POST_FEEDBACK = 'POST_FEEDBACK';
 export const DELETE_FEEDBACK = 'DELETE_FEEDBACK';
