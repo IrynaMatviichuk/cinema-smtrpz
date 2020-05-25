@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CustomButton from '../util/CustomButton';
+import PostScreening from './PostScreening';
 
 // Redux
 import { logoutUser } from '../redux/actions/userActions';
@@ -15,7 +16,6 @@ import Button from '@material-ui/core/Button';
 
 // Icons
 import HomeIcon from '@material-ui/icons/Home';
-import PostScreening from './PostScreening';
 
 
 const styles = (theme) => ({})

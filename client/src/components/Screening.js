@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CustomButton from '../util/CustomButton';
 import DeleteScreening from './DeleteScreening';
-import PostScreening from './PostScreening';
+import ScreeningDialog from './ScreeningDialog';
+
 
 // MUI
 import Card from '@material-ui/core/CardActionArea';
@@ -56,7 +57,8 @@ class Screening extends Component {
             },
             user: {
                 authenticated,
-                is_admin
+                is_admin,
+                cinema_user_id
             }
         } = this.props;
 
@@ -79,6 +81,7 @@ class Screening extends Component {
                         </CustomButton>
                         {/* <span>{feedbackCount} feedback</span> */}
                         {deleteButton}
+                        <ScreeningDialog screeningId={screening_id} userId={cinema_user_id}/>
                     </CardContent>
                 </Paper>
             </Card>

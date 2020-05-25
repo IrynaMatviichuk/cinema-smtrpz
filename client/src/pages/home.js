@@ -17,7 +17,6 @@ class home extends Component {
 
     render() {
         const { data: { screenings, loading }, authenticated} = this.props;
-        console.log(authenticated);
         let screeningsMarkup = !loading ? (
             screenings.map(screening => <Screening key={screening.screening_id} screening={screening} />)
         ) : (<p>Loading ...</p>);

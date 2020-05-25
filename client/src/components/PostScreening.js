@@ -5,7 +5,12 @@ import CustomButton from '../util/CustomButton';
 
 // Redux
 import { connect } from 'react-redux';
-import { postScreening, getMovies, getAuditoriums } from '../redux/actions/dataActions';
+import {
+    postScreening,
+    getMovies,
+    getAuditoriums,
+    clearErrors
+} from '../redux/actions/dataActions';
 
 // MUI
 import Button from '@material-ui/core/Button';
@@ -27,7 +32,8 @@ import CloseIcon from '@material-ui/icons/Close';
 const styles = {
     submitButton: {
         position: 'relative',
-        margin: '20px auto 10px auto'
+        margin: '10px auto 10px auto',
+        float: 'right'
     },
     progressSpinner: {
         position: 'absolute'
@@ -51,14 +57,7 @@ const numberFieldProps = {
 
 
 class PostScreening extends Component {
-    constructor() {
-        super();
-
-        // let defaultDateTime = new Date();
-        // defaultDateTime.setDate(defaultDateTime.getDate() + 1);
-        // let defaultDate = defaultDateTime.toISOString().split('T')[0];
-        // let defaultTime = defaultDateTime.toISOString().split('T')[1].substring(0,5);
-        this.state = {
+        state = {
             open: false,
             movie_id_fk: undefined,
             auditorium_id_fk: undefined,
@@ -67,7 +66,6 @@ class PostScreening extends Component {
             start_time: undefined,
             errors: {}
         };
-    }
 
     componentDidMount() {
         this.props.getMovies();
@@ -85,9 +83,10 @@ class PostScreening extends Component {
                 auditorium_id_fk: undefined,
                 price: '',
                 screening_date: undefined,
-                start_time: undefined
+                start_time: undefined,
+                open: false,
+                errors: {}
             });
-            this.handleClose();
         }
     }
 
@@ -96,6 +95,7 @@ class PostScreening extends Component {
     }
 
     handleClose = () => {
+        this.props.clearErrors();
         this.setState({ open: false, errors: {} });
     }
 
@@ -133,7 +133,11 @@ class PostScreening extends Component {
                     fullWidth
                     maxWidth="sm"
                 >
-                    <CustomButton tip="Close" onClick={this.handleClose} tipClassName={classes.closeButton}>
+                    <CustomButton
+                        tip="Close"
+                        onClick={this.handleClose}
+                        tipClassName={classes.closeButton}
+                    >
                         <CloseIcon/>
                     </CustomButton>
                     <DialogTitle>Post a new screening</DialogTitle>
@@ -231,6 +235,7 @@ PostScreening.propTypes = {
     postScreening: PropTypes.func.isRequired,
     getMovies: PropTypes.func.isRequired,
     getAuditoriums: PropTypes.func.isRequired,
+    clearErrors: PropTypes.func.isRequired,
     data: PropTypes.object.isRequired,
     UI: PropTypes.object.isRequired
 }
@@ -244,7 +249,8 @@ const mapStateToProps = (state) => ({
 const mapActionsToProps = {
     postScreening,
     getMovies,
-    getAuditoriums
+    getAuditoriums,
+    clearErrors
 }
 
 

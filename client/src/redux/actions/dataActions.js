@@ -1,7 +1,9 @@
 import {
-    SET_SCREENINGS,
     LOADING_DATA,
     LOADING_UI,
+    STOP_LOADING_UI,
+    SET_SCREENINGS,
+    SET_SCREENING,
     POST_SCREENING,
     DELETE_SCREENING,
     SET_MOVIES,
@@ -23,7 +25,7 @@ export const getScreenings = () => dispatch => {
             dispatch({
                 type: SET_SCREENINGS,
                 payload: res.data
-            })
+            });
         })
         .catch(err => {
             dispatch({
@@ -31,6 +33,23 @@ export const getScreenings = () => dispatch => {
                 payload: []
             })
         });
+}
+
+
+// Get a screening
+export const getScreening = screeningId => dispatch => {
+    dispatch({ type: LOADING_UI });
+    axios
+        .get(`/screening/get/${screeningId}`)
+        .then(res => {
+            console.log("getScreening",res);
+            dispatch({
+                type: SET_SCREENING,
+                payload: res.data
+            });
+            dispatch({ type: STOP_LOADING_UI });
+        })
+        .catch(err => console.log(err));
 }
 
 
@@ -136,4 +155,9 @@ export const deleteFeedback = newFeedback => dispatch => {
             })
             .catch(err => console.log(err));
         })
+}
+
+
+export const clearErrors = () => dispatch => {
+    dispatch({ type: CLEAR_ERRORS });
 }

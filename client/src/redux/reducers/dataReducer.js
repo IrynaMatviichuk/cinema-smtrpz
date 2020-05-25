@@ -1,5 +1,6 @@
 import {
     SET_SCREENINGS,
+    SET_SCREENING,
     POST_SCREENING,
     DELETE_SCREENING,
     SET_MOVIES,
@@ -32,8 +33,12 @@ export default function(state = initialState, action) {
                 screenings: action.payload,
                 loading: false
             }
+        case SET_SCREENING:
+            return {
+                ...state,
+                screening: action.payload
+            }
         case POST_SCREENING:
-            console.log('reducer', action.payload);
             return {
                 ...state,
                 screenings: [
