@@ -64,10 +64,17 @@ export default function(state = initialState, action) {
                 auditoriums: action.payload,
                 loading: false
             }
-        // case POST_FEEDBACK:
-        //     return {
-
-        //     }
+        case POST_FEEDBACK:
+            return {
+                ...state,
+                screening: {
+                    ...state.screening,
+                    movie: {
+                        ...state.screening.movie,
+                        feedbacks: [action.payload, ...state.screening.movie.feedbacks]
+                    }
+                }
+            }
         // case DELETE_FEEDBACK:
         default:
             return state;

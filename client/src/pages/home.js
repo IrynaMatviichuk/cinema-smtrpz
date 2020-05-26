@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 
-import Screening from '../components/Screening';
+import Screening from '../components/screening/Screening';
 import Profile from '../components/Profile';
 
 // Redux

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import withStyles from '@material-ui/core/styles/withStyles';
-import CustomButton from '../util/CustomButton';
+import CustomButton from '../../util/CustomButton';
 import DeleteScreening from './DeleteScreening';
 import ScreeningDialog from './ScreeningDialog';
 

@@ -1,12 +1,14 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
-import CustomButton from '../util/CustomButton';
+import Feedbacks from './Feedbacks';
+import FeedbackForm from './FeedbackForm';
+import CustomButton from '../../util/CustomButton';
 import { Link } from 'react-router-dom';
 
 // Redux
 import { connect } from 'react-redux';
-import { getScreening } from '../redux/actions/dataActions';
+import { getScreening, clearErrors } from '../../redux/actions/dataActions';
 
 // MUI
 import Dialog from '@material-ui/core/Dialog';
@@ -25,6 +27,29 @@ const styles = theme => ({
     invisibleSeparator: {
         border: 'none',
         margin: 4
+    },
+    dialogContent: {
+        paddingTop: 20,
+        paddingBottom: 20
+    },
+    closeButton: {
+        position: 'absolute',
+        left: '90%',
+        top: '8%'
+    },
+    expandButton: {
+        position: 'absolute',
+        left: '90%'
+    },
+    spinnerDiv: {
+        textAlign: 'center',
+        marginTop: 50,
+        marginBottom: 50
+    },
+    visibleSeparator: {
+        width: '100%',
+        borderBottom: '1px solid rgba(0,0,0,0.1)',
+        marginBottom: 10
     }
 })
 
@@ -34,10 +59,6 @@ class ScreeningDialog extends Component {
         open: false
     }
 
-    componentDidMount() {
-        // this.props.getScreening(this.props.screeningId);
-    }
-
     handleOpen = () => {
         this.setState({ open: true });
         this.props.getScreening(this.props.screeningId);
@@ -45,6 +66,7 @@ class ScreeningDialog extends Component {
 
     handleClose = () => {
         this.setState({ open: false });
+        this.props.clearErrors();
     }
 
     render() {
@@ -53,16 +75,7 @@ class ScreeningDialog extends Component {
             screening: {
                 auditorium,
                 end_time,
-            //     movie: {
-            //         description,
-            //         duration,
-            //         genre: {
-            //             genre_id,
-            //             name
-            //         },
-            //         movie_id,
-            //         title
-            //     },
+                movie,
                 price,
                 screening_date,
                 screening_id,
@@ -72,23 +85,31 @@ class ScreeningDialog extends Component {
                 loading
             }
         } = this.props;
-        console.log(auditorium);
 
         const dialogMarkup = loading ? (
-            <CircularProgress size={200} />
+            <div className={classes.spinnerDiv}>
+                <CircularProgress size={200} thickness={2} />
+            </div>
         ) : (
                 <Grid container spcing={16}>
-                    <Grid item sm={7}>
-                        {/* <Typography variant="h5" component={Link} to={`/movie/${movie_id}`} color="primary">{title}</Typography> */}
-                        <hr className={classes.invisibleSeparator}/>
-                        <Typography variant="body2" color="textSecondary">Date: {screening_date}</Typography>
-                        <Typography variant="body2" color="textSecondary">Time: {start_time}</Typography>
-                        {/* <Typography variant="body2" color="textSecondary">Duration: {duration} min</Typography> */}
-                        {/* <Typography variant="body2" color="textSecondary">Genre: {name}</Typography> */}
-                        <Typography variant="body1">Price: {price} UAH</Typography>
-                    </Grid>
+                    {screening_id && (
+                        <Fragment>
+                            <Grid item sm={7}>
+                                <Typography variant="h5" component={Link} to={`/movie/${movie.movie_id}`} color="primary">{movie.title}</Typography>
+                                <hr className={classes.invisibleSeparator} />
+                                <Typography variant="body2" color="textSecondary">Date: {screening_date}</Typography>
+                                <Typography variant="body2" color="textSecondary">Time: {start_time}</Typography>
+                                <Typography variant="body2" color="textSecondary">Duration: {movie.duration} min</Typography>
+                                <Typography variant="body2" color="textSecondary">Genre: {movie.genrename}</Typography>
+                                <Typography variant="body1">Price: {price} UAH</Typography>
+                            </Grid>
+                            <hr className={classes.visibleSeparator}/>
+                            <FeedbackForm movieId={movie.movie_id}/>
+                            <Feedbacks feedbacks={movie.feedbacks} />
+                        </Fragment>
+                    )}
                 </Grid>
-            )
+            );
         return (
             <Fragment>
                 <CustomButton onClick={this.handleOpen} tip="Expand screening" tipClassName={classes.expandButton}>
@@ -123,7 +144,8 @@ ScreeningDialog.propTypes = {
     userId: PropTypes.number.isRequired,
     screening: PropTypes.object.isRequired,
     // data: PropTypes.object.isRequired,
-    UI: PropTypes.object.isRequired
+    UI: PropTypes.object.isRequired,
+    clearErrors: PropTypes.func.isRequired
 }
 
 
@@ -135,7 +157,8 @@ const mapStateToProps = (state) => ({
 
 
 const mapActionsToProps = {
-    getScreening
+    getScreening,
+    clearErrors
 }
 
 

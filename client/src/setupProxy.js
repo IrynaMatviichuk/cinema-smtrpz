@@ -31,6 +31,13 @@ module.exports = app => {
         })
     ),
     app.use(
+        '/feedback/*',
+        createProxyMiddleware({
+            target: 'http://localhost:8084',
+            changeOrigin: true,
+        })
+    ),
+    app.use(
         '/admin/*',
         createProxyMiddleware({
             target: 'http://localhost:8085',

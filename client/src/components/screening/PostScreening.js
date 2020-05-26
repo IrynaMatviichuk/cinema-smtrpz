@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
-import CustomButton from '../util/CustomButton';
+import CustomButton from '../../util/CustomButton';
 
 // Redux
 import { connect } from 'react-redux';
@@ -10,7 +10,7 @@ import {
     getMovies,
     getAuditoriums,
     clearErrors
-} from '../redux/actions/dataActions';
+} from '../../redux/actions/dataActions';
 
 // MUI
 import Button from '@material-ui/core/Button';
@@ -113,7 +113,6 @@ class PostScreening extends Component {
             screening_date: this.state.screening_date,
             start_time: `${this.state.start_time}:00`
         };
-        console.log(newScreening);
 
         this.props.postScreening(newScreening);
     }
@@ -121,7 +120,7 @@ class PostScreening extends Component {
     render() {
         const { classes, data: { movies, auditoriums }, UI: { loading }} = this.props;
         const { errors } = this.state;
-        console.log(errors);
+
         return (
             <Fragment>
                 <CustomButton onClick={this.handleOpen} tip="Post a screening">
@@ -149,7 +148,7 @@ class PostScreening extends Component {
                                 label="Movie"
                                 // helperText={errors.movie_id_fk}
                                 error={errors.movie_id_fk ? true : false}
-                                className={classes.TextField}
+                                className={classes.textField}
                                 onChange={this.handleChange}
                                 fullWidth
                             >
@@ -164,7 +163,7 @@ class PostScreening extends Component {
                                 label="Auditorium"
                                 helperText={errors.auditorium_id_fk}
                                 error={errors.auditorium_id_fk ? true : false}
-                                className={classes.TextField}
+                                className={classes.textField}
                                 onChange={this.handleChange}
                                 fullWidth
                             >

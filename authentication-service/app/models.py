@@ -34,45 +34,11 @@ class CinemaUser(db.Model):
         return {
             "cinema_user_id": self.cinema_user_id,
             "username": self.username,
-            "password": self.password,
             "firstname": self.firstname,
             "lastname": self.lastname,
             "is_admin": self.is_admin,
         }
 
-    # @validates("username")
-    # def validate_username(self, key, username):
-    #     if len(username) < 3 or len(username) > 20:
-    #         raise AssertionError("Username length must be between 3 and 20")
-    #     elif not re.match(r"^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$", username):
-    #         raise AssertionError("Invalid username format")
-
-    #     return username
-
-    # @validates("password")
-    # def validate_password(self, key, password):
-    #     if len(password) < 8 or len(password) > 15:
-    #         raise AssertionError("Password length must be between 3 and 20")
-    #     elif not re.match(r"(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9_]{6,15})$", password):
-    #         raise AssertionError("Password must contain letters and numbers or _")
-
-    # @validates("firstname")
-    # def validate_firstname(self, key, firstname):
-    #     if len(firstname) < 2 or len(firstname) > 20:
-    #         raise AssertionError("Firstname length must be between 2 and 20")
-    #     elif not re.match(r"^[a-zA-Z]{2,20}$", firstname):
-    #         raise AssertionError("Firstname must contain only letters")
-        
-    #     return firstname
-
-    # @validates("lastname")
-    # def validate_lastname(self, key, lastname):
-    #     if len(lastname) < 2 or len(lastname) > 20:
-    #         raise AssertionError("Lastname length must be between 2 and 20")
-    #     elif not re.match(r"^[a-zA-Z]{2,20}$", lastname):
-    #         raise AssertionError("Lastname must contain only letters")
-        
-    #     return lastname
 
     def verify_password(self, password_to_check):
         return check_password_hash(self.password, password_to_check)

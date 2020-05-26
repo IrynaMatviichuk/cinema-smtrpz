@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
-import CustomButton from '../util/CustomButton';
-import PostScreening from './PostScreening';
+import CustomButton from '../../util/CustomButton';
+import PostScreening from '../screening/PostScreening';
 
 // Redux
-import { logoutUser } from '../redux/actions/userActions';
+import { logoutUser } from '../../redux/actions/userActions';
 
 // MUI
 import AppBar from '@material-ui/core/AppBar';

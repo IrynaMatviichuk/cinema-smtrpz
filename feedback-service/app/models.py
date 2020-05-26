@@ -31,8 +31,8 @@ class Feedback(db.Model):
             "review": self.review,
             "feedback_date": self.feedback_date.strftime("%Y-%m-%d"),
             "feedback_time": self.feedback_time.strftime("%H:%M:%S"),
-            "movie_id_fk": self.movie_id_fk if use_id else self.movie.to_dict(),
-            "cinema_user_id_fk": self.cinema_user_id_fk if use_id else self.cinema_user.to_dict(),
+            "movie": self.movie_id_fk if use_id else self.movie.to_dict(),
+            "cinema_user": self.cinema_user_id_fk if use_id else self.cinema_user.to_dict(),
         }
 
 
@@ -55,7 +55,7 @@ class Movie(db.Model):
     def __repr__(self):
         return (
             f"<Movie:(movie_id={self.movie_id}, title={self.title}, duration={self.duration}, "
-            f"genre={self.genre_if_fk}, description={self.description})>"
+            f"genre={self.genre_id_fk}, description={self.description})>"
         )
 
     def to_dict(self):
@@ -90,7 +90,6 @@ class CinemaUser(db.Model):
         return {
             "cinema_user_id": self.cinema_user_id,
             "username": self.username,
-            "password": self.password,
             "firstname": self.firstname,
             "lastname": self.lastname,
             "is_admin": self.is_admin,

@@ -42,7 +42,6 @@ export const getScreening = screeningId => dispatch => {
     axios
         .get(`/screening/get/${screeningId}`)
         .then(res => {
-            console.log("getScreening",res);
             dispatch({
                 type: SET_SCREENING,
                 payload: res.data
@@ -63,11 +62,9 @@ export const postScreening = (newScreening) => dispatch => {
                 type: POST_SCREENING,
                 payload: res.data
             });
-            dispatch({ type: CLEAR_ERRORS });
+            dispatch(clearErrors());
         })
         .catch(err => {
-            console.log(err);
-            console.log(err.response)
             dispatch({
                 type: SET_ERRORS,
                 payload: err.response.data
@@ -96,7 +93,6 @@ export const getMovies = () => dispatch => {
     axios
         .get('/movie/select/all')
         .then(res => {
-            console.log('action', res.data);
             dispatch({
                 type: SET_MOVIES,
                 payload: res.data
@@ -126,36 +122,44 @@ export const getAuditoriums = () => dispatch => {
             dispatch({
                 type: SET_AUDITORIUMS,
                 payload: []
-            })
+            });
         });
 }
 
 
 // Post feedback
 export const postFeedback = newFeedback => dispatch => {
+    console.log(newFeedback);
     axios
-        .post('/feedback/insert')
+        .post('/feedback/insert', newFeedback)
         .then(res => {
             dispatch({
                 type: POST_FEEDBACK,
                 payload: res.data
-            })
-            .catch(err => console.log(err));
+            });
+            dispatch(clearErrors());
         })
+        .catch(err => {
+            console.log(err.response.data)
+            dispatch({
+                type: SET_ERRORS,
+                payload: err.response.data
+            });
+        });
 }
 
 // Delete feedback
-export const deleteFeedback = newFeedback => dispatch => {
-    axios
-        .post('/feedback/delete')
-        .then(res => {
-            dispatch({
-                type: POST_FEEDBACK,
-                payload: res.data
-            })
-            .catch(err => console.log(err));
-        })
-}
+// export const deleteFeedback = newFeedback => dispatch => {
+//     axios
+//         .post('/feedback/delete')
+//         .then(res => {
+//             dispatch({
+//                 type: DELETE_FEEDBACK,
+//                 payload: res.data
+//             })
+//             .catch(err => console.log(err));
+//         })
+// }
 
 
 export const clearErrors = () => dispatch => {

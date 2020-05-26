@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import withStyles from '@material-ui/core/styles/withStyles';
-import CustomButton from '../util/CustomButton';
+import CustomButton from '../../util/CustomButton';
 
 // MUI
 import Button from '@material-ui/core/Button';
@@ -13,7 +13,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DeleteOutline from '@material-ui/icons/DeleteOutline';
 
 // Redux
-import { deleteScreening } from '../redux/actions/dataActions';
+import { deleteScreening } from '../../redux/actions/dataActions';
 
 
 const styles = {

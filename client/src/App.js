@@ -13,7 +13,7 @@ import { SET_AUTHENTICATED } from './redux/types';
 import { logoutUser, getUserData } from './redux/actions/userActions';
 
 // Components
-import Navbar from './components/Navbar';
+import Navbar from './components/layout/Navbar';
 import AuthRoute from './util/AuthRoute';
 
 // Pages
@@ -48,7 +48,6 @@ if (token) {
   const decodedToken = jwtDecode(token);
   if (decodedToken.exp * 1000 < Date.now()) {
     store.dispatch(logoutUser());
-    console.log('here', window.location.href);
     window.location.href = "/login";
   } else {
     store.dispatch({ type: SET_AUTHENTICATED });
