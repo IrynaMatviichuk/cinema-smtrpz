@@ -51,9 +51,20 @@ def update(movie_id):
         return Response(dumps({
             error: ", ".join(values) for (error, values) in errors.items()
         }), status=400)
+
+    if Movie.query.filter(
+            Movie.movie_id != movie_id
+        ).filter_by(title=movie_data.get("title")).all():
+        return Response(dumps({
+            "title": "title already exists"
+        }), status=400)
     
+    genre = Genre.query.get_or_404(movie_data.get("genre_id_fk"))
+
     movie = Movie.query.get_or_404(movie_id)
+    movie.title = movie_data.get("title", movie.title)
     movie.duration = movie_data.get("duration", movie.duration)
+    movie.genre_id_fk = genre.genre_id
     movie.description = movie_data.get("description", movie.description)
     db.session.commit()
 

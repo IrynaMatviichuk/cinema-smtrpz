@@ -1,14 +1,14 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
-import Feedbacks from './Feedbacks';
-import FeedbackForm from './FeedbackForm';
+// import Feedbacks from './Feedbacks';
+// import FeedbackForm from './FeedbackForm';
 import CustomButton from '../../util/CustomButton';
 import { Link } from 'react-router-dom';
 
 // Redux
 import { connect } from 'react-redux';
-import { getScreening, clearErrors } from '../../redux/actions/dataActions';
+import { getMovie, clearErrors } from '../../redux/actions/dataActions';
 
 // MUI
 import Dialog from '@material-ui/core/Dialog';
@@ -54,14 +54,14 @@ const styles = theme => ({
 })
 
 
-class ScreeningDialog extends Component {
+class MovieDialog extends Component {
     state = {
         open: false
     }
 
     handleOpen = () => {
         this.setState({ open: true });
-        this.props.getScreening(this.props.screeningId);
+        this.props.getMovie(this.props.movieId);
     }
 
     handleClose = () => {
@@ -72,14 +72,12 @@ class ScreeningDialog extends Component {
     render() {
         const {
             classes,
-            screening: {
-                auditorium,
-                end_time,
-                movie,
-                price,
-                screening_date,
-                screening_id,
-                start_time
+            movie: {
+                movie_id,
+                title,
+                duration,
+                genre,
+                description
             },
             UI: {
                 loading
@@ -92,20 +90,15 @@ class ScreeningDialog extends Component {
             </div>
         ) : (
                 <Grid container spacing={16}>
-                    {screening_id && (
+                    {movie_id && (
                         <Fragment>
                             <Grid item sm={7}>
-                                <Typography variant="h5" component={Link} to={`/movie/${movie.movie_id}`} color="primary">{movie.title}</Typography>
-                                <hr className={classes.invisibleSeparator} />
-                                <Typography variant="body2" color="textSecondary">Date: {screening_date}</Typography>
-                                <Typography variant="body2" color="textSecondary">Time: {start_time}</Typography>
-                                <Typography variant="body2" color="textSecondary">Duration: {movie.duration} min</Typography>
-                                <Typography variant="body2" color="textSecondary">Genre: {movie.genre.name}</Typography>
-                                <Typography variant="body1">Price: {price} UAH</Typography>
+                                <Typography variant="h5" color="primary">{title}</Typography>
+                                <Typography variant="body1" color="textSecondary">Duration: {duration} min</Typography>
+                                <Typography variant="body1" color="textSecondary">Genre: {genre.name}</Typography>
+                                <Typography variant="body2" color="textSecondary">Description: {description}</Typography>
                             </Grid>
                             <hr className={classes.visibleSeparator}/>
-                            {/* <FeedbackForm movieId={movie.movie_id}/> */}
-                            {/* <Feedbacks feedbacks={movie.feedbacks} screeningId={screening_id}/> */}
                         </Fragment>
                     )}
                 </Grid>
@@ -139,28 +132,26 @@ class ScreeningDialog extends Component {
 }
 
 
-ScreeningDialog.propTypes = {
-    getScreening: PropTypes.func.isRequired,
-    screeningId: PropTypes.number.isRequired,
+MovieDialog.propTypes = {
+    getMovie: PropTypes.func.isRequired,
+    movieId: PropTypes.number.isRequired,
     userId: PropTypes.number.isRequired,
-    screening: PropTypes.object.isRequired,
-    // data: PropTypes.object.isRequired,
+    movie: PropTypes.object.isRequired,
     UI: PropTypes.object.isRequired,
     clearErrors: PropTypes.func.isRequired
 }
 
 
-const mapStateToProps = (state) => ({
-    screening: state.data.screening,
-    // data: state.data,
+const mapStateToProps = state => ({
+    movie: state.data.movie,
     UI: state.UI
 })
 
 
 const mapActionsToProps = {
-    getScreening,
+    getMovie,
     clearErrors
 }
 
 
-export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(ScreeningDialog));
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(MovieDialog));

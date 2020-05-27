@@ -5,9 +5,15 @@ import {
     SET_SCREENINGS,
     SET_SCREENING,
     POST_SCREENING,
+    UPDATE_SCREENING,
     DELETE_SCREENING,
     SET_MOVIES,
+    SET_MOVIE,
+    POST_MOVIE,
+    UPDATE_MOVIE,
+    DELETE_MOVIE,
     SET_AUDITORIUMS,
+    SET_GENRES,
     POST_FEEDBACK,
     DELETE_FEEDBACK,
     SET_ERRORS,
@@ -16,7 +22,7 @@ import {
 import axios from 'axios';
 
 
-// Get all screeings
+// Get all screenings
 export const getScreenings = () => dispatch => {
     dispatch({ type: LOADING_DATA });
     axios
@@ -53,7 +59,7 @@ export const getScreening = screeningId => dispatch => {
 
 
 // Post a screening
-export const postScreening = (newScreening) => dispatch => {
+export const postScreening = newScreening => dispatch => {
     dispatch({ type: LOADING_UI });
     axios
         .post('/admin/screening/insert', newScreening)
@@ -73,8 +79,30 @@ export const postScreening = (newScreening) => dispatch => {
 }
 
 
+// Update a screening
+export const updateScreening = (updatedScreening, screeningId) => dispatch => {
+    dispatch({ type: LOADING_UI });
+    axios
+        .put(`admin/screening/update/${screeningId}`, updatedScreening)
+        .then(res => {
+            dispatch({
+                type: UPDATE_SCREENING,
+                payload: res.data
+            });
+            dispatch({ type: STOP_LOADING_UI });
+            dispatch(clearErrors());
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_ERRORS,
+                payload: err.response.data
+            });
+        });
+}
+
+
 // Delete screening
-export const deleteScreening = (screeningId) => dispatch => {
+export const deleteScreening = screeningId => dispatch => {
     axios
         .delete(`/admin/screening/delete/${screeningId}`)
         .then(() => {
@@ -107,6 +135,79 @@ export const getMovies = () => dispatch => {
 }
 
 
+// Get a movie
+export const getMovie = movieId => dispatch => {
+    dispatch({ type: LOADING_UI });
+    axios
+        .get(`/movie/get/${movieId}`)
+        .then(res => {
+            dispatch({
+                type: SET_MOVIE,
+                payload: res.data
+            });
+            dispatch({ type: STOP_LOADING_UI });
+        })
+        .catch(err => console.log(err));
+}
+
+
+// Post a movie
+export const postMovie = newMovie => dispatch => {
+    dispatch({ type: LOADING_UI });
+    axios
+        .post('admin/movie/insert', newMovie)
+        .then(res => {
+            dispatch({
+                type: POST_MOVIE,
+                payload: res.data
+            });
+            dispatch(clearErrors());
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_ERRORS,
+                payload: err.response.data
+            });
+        });
+}
+
+
+// Update a movie
+export const updateMovie = (updatedMovie, movieId) => dispatch => {
+    dispatch({ type: LOADING_UI });
+    axios
+        .put(`admin/movie/update/${movieId}`, updatedMovie)
+        .then(res => {
+            dispatch({
+                type: UPDATE_MOVIE,
+                payload: res.data
+            });
+            dispatch({ type: STOP_LOADING_UI });
+            dispatch(clearErrors());
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_ERRORS,
+                payload: err.response.data
+            });
+        });
+}
+
+
+// Delete movie
+export const deleteMovie = movieId => dispatch => {
+    axios
+        .delete(`/admin/movie/delete/${movieId}`)
+        .then(() => {
+            dispatch({
+                type: DELETE_MOVIE,
+                payload: movieId
+            })
+        })
+        .catch(err => console.log(err));
+}
+
+
 // Get all auditoriums
 export const getAuditoriums = () => dispatch => {
     dispatch({ type: LOADING_DATA });
@@ -116,7 +217,7 @@ export const getAuditoriums = () => dispatch => {
             dispatch({
                 type: SET_AUDITORIUMS,
                 payload: res.data
-            })
+            });
         })
         .catch(err => {
             dispatch({
@@ -127,9 +228,28 @@ export const getAuditoriums = () => dispatch => {
 }
 
 
+// Get all genres
+export const getGenres = () => dispatch => {
+    dispatch({ type: LOADING_DATA });
+    axios
+        .get('/genre/select/all')
+        .then(res => {
+            dispatch({
+                type: SET_GENRES,
+                payload: res.data
+            });
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_GENRES,
+                payload: []
+            });
+        });
+}
+
+
 // Post feedback
 export const postFeedback = newFeedback => dispatch => {
-    console.log(newFeedback);
     axios
         .post('/feedback/insert', newFeedback)
         .then(res => {
@@ -140,7 +260,6 @@ export const postFeedback = newFeedback => dispatch => {
             dispatch(clearErrors());
         })
         .catch(err => {
-            console.log(err.response.data)
             dispatch({
                 type: SET_ERRORS,
                 payload: err.response.data
@@ -149,17 +268,19 @@ export const postFeedback = newFeedback => dispatch => {
 }
 
 // Delete feedback
-// export const deleteFeedback = newFeedback => dispatch => {
-//     axios
-//         .post('/feedback/delete')
-//         .then(res => {
-//             dispatch({
-//                 type: DELETE_FEEDBACK,
-//                 payload: res.data
-//             })
-//             .catch(err => console.log(err));
-//         })
-// }
+export const deleteFeedback = (feedbackId, screeningId) => dispatch => {
+    axios
+        .delete(`/feedback/delete/${feedbackId}`)
+        .then(() => {
+            dispatch({
+                type: DELETE_FEEDBACK,
+                payload: feedbackId
+            });
+            dispatch(getScreening(screeningId));
+            dispatch({ type: STOP_LOADING_UI });
+        })
+        .catch(err => console.log(err));
+}
 
 
 export const clearErrors = () => dispatch => {

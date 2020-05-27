@@ -3,6 +3,13 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = app => {
     app.use(
+        '/genre/*',
+        createProxyMiddleware({
+            target: 'http://localhost:8081',
+            changeOrigin: true,
+        })
+    ),
+    app.use(
         '/movie/*',
         createProxyMiddleware({
             target: 'http://localhost:8081',

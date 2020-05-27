@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CustomButton from '../../util/CustomButton';
 import PostScreening from '../screening/PostScreening';
+import PostMovie from '../movie/PostMovie';
 
 // Redux
 import { logoutUser } from '../../redux/actions/userActions';
@@ -33,6 +34,7 @@ class Navbar extends Component {
                 <Toolbar className="nav-container">
                     {authenticated ? (
                         <Fragment>
+                            {is_admin && <PostMovie/>}
                             {is_admin && <PostScreening/>}
                             <Link to="/">
                                 <CustomButton tip="Home">

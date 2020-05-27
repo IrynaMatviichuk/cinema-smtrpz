@@ -1,7 +1,9 @@
 import React, { Component, Fragment } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Link } from 'react-router-dom';
+import DeleteFeedback from './DeleteFeedback';
 
 // MUI
 import Grid from '@material-ui/core/Grid';
@@ -17,25 +19,20 @@ const styles = theme => ({
         width: '100%',
         borderBottom: '1px solid rgba(0,0,0,0.1)',
         marginBottom: 10
-    },
-    dateTime: {
-        textAlign: 'right'
     }
 })
 
 
 class Feedbacks extends Component {
     render() {
-        const { classes, feedbacks } = this.props;
+        const { classes, feedbacks, screeningId, user: { authenticated, cinema_user_id } } = this.props;
         let currentDate = new Date().toISOString().split('T')[0];
-        console.log("feedbacks", feedbacks);
+
         return (
             <Grid container >
                 {feedbacks.map((feedback, index) => {
                     const {
-                        cinema_user: {
-                            username
-                        },
+                        cinema_user,
                         feedback_date,
                         feedback_id,
                         feedback_time,
@@ -43,36 +40,42 @@ class Feedbacks extends Component {
                         review,
                         score
                     } = feedback;
+
+                    const deleteButton = authenticated && cinema_user_id === cinema_user.cinema_user_id ? (
+                        <DeleteFeedback feedbackId={feedback_id} screeningId={screeningId}/>
+                    ) : null;
+
                     return (
                         <Fragment key={feedback_id}>
                             <Grid item sm={12}>
-                                <Grid container>
-                                    <Grid item sm={10}>
-                                        <div className={classes.commentData}>
-                                            <Typography
-                                                variant="h5"
-                                                color="primary"
-                                            >
-                                                @{username}
-                                            </Typography>
-                                            <hr className={classes.invisibleSeparator} />
-                                            <Typography variant="body2">
-                                                score: {score}
-                                            </Typography>
-                                            <Typography variant="body1">
-                                                {review}
-                                            </Typography>
-                                        </div>
-                                    </Grid>
-                                    <Grid item sm={2} className={classes.dateTime}>
+                                <div className={classes.commentData}>
+                                    <Grid container justify="space-between">
+                                        <Typography
+                                            variant="h5"
+                                            color="primary"
+                                            inline
+                                            align="left"
+                                        >
+                                            @{cinema_user.username}
+                                        </Typography>
                                         <Typography
                                             variant="body2"
+                                            align="right"
                                             color="textSecondary"
+                                            inline
                                         >
                                             {feedback_date === currentDate ? feedback_time : feedback_date}
                                         </Typography>
                                     </Grid>
-                                </Grid>
+                                    <hr className={classes.invisibleSeparator} />
+                                    <Typography variant="body2">
+                                        score: {score}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        {review}
+                                    </Typography>
+                                </div>
+                                {deleteButton}
                             </Grid>
                             {index !== feedbacks.length - 1 && (
                                 <hr className={classes.visibleSeparator} />
@@ -87,8 +90,14 @@ class Feedbacks extends Component {
 
 
 Feedbacks.propTypes = {
+    user: PropTypes.object.isRequired,
     feedbacks: PropTypes.array.isRequired
 }
 
 
-export default withStyles(styles)(Feedbacks);
+const mapStateToProps = state => ({
+    user: state.user
+})
+
+
+export default connect(mapStateToProps)(withStyles(styles)(Feedbacks));

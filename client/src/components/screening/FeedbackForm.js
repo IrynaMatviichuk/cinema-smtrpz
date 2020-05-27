@@ -24,20 +24,17 @@ const styles = theme => ({
     textField: {
         margin: '10px auto 10px auto'
     },
-    label: {
-        marginTop: '15px'
+    button: {
+        verticalAlign: 'bottom',
+        marginBottom: 0,
+        marginTop: 22
     }
 })
 
 
-const numberFieldProps = {
-    step: "1"
-}
-
-
 class FeedbackForm extends Component {
     state = {
-        score: '',
+        score: 0,
         review: '',
         errors: {}
     }
@@ -49,7 +46,7 @@ class FeedbackForm extends Component {
 
         if (!nextProps.UI.errors && !nextProps.UI.loading) {
             this.setState({
-                score: '',
+                score: 0,
                 review: '',
                 errors: {}
             })
@@ -75,48 +72,53 @@ class FeedbackForm extends Component {
     render() {
         const { classes, user: { authenticated, is_admin } } = this.props;
         const errors = this.state.errors;
-        
+
         const feedbackFormMarkup = (authenticated && !is_admin) ? (
             <Grid item sm={12} style={{ textAlign: 'center' }}>
                 <form onSubmit={this.handleSubmit}>
-                <InputLabel shrink className={classes.label}>Score</InputLabel>
-                    <Select
-                        name="score"
-                        label="Score"
-                        error={errors.score ? true : false}
-                        className={classes.textField}
-                        onChange={this.handleChange}
-                        fullWidth
-                    >
-                        {Array.from(Array(10), (x, index) => index + 1).map(
-                            score => <MenuItem value={score}>{score}</MenuItem>
-                        )}
-                    </Select>
-                    <FormHelperText error={errors.score ? true : false}>{errors.score}</FormHelperText>
-                    <TextField
-                        name="review"
-                        type="text"
-                        // multiline={true}
-                        // rows={2}
-                        // rowsMax={5}
-                        label="Leave a review"
-                        error={errors.review ? true : false}
-                        helperText={errors.review}
-                        value={this.state.review}
-                        onChange={this.handleChange}
-                        fullWidth
-                        className={classes.textField}
-                    />
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        className={classes.button}
-                    >
-                        Submit
+                    <Grid container spacing={1}>
+                        <Grid item sm={1}>
+                            <InputLabel shrink className={classes.label}>Score</InputLabel>
+                            <Select
+                                name="score"
+                                label="Score"
+                                error={errors.score ? true : false}
+                                className={classes.textField}
+                                onChange={this.handleChange}
+                                fullWidth
+                            >
+                                {Array.from(Array(10), (x, index) => index + 1).map(
+                                    score => <MenuItem value={score}>{score}</MenuItem>
+                                )}
+                            </Select>
+                            <FormHelperText error={errors.score ? true : false}>{errors.score}</FormHelperText>
+                        </Grid>
+                        <Grid item sm={9}>
+                            <TextField
+                                name="review"
+                                type="text"
+                                label="Leave a review"
+                                error={errors.review ? true : false}
+                                helperText={errors.review}
+                                value={this.state.review}
+                                onChange={this.handleChange}
+                                fullWidth
+                                className={classes.textField}
+                            />
+                        </Grid>
+                        <Grid item sm={2}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                className={classes.button}
+                            >
+                                Send
                     </Button>
+                        </Grid>
+                    </Grid>
                 </form>
-                <hr className={classes.visibleSeparator}/>
+                <hr className={classes.visibleSeparator} />
             </Grid>
         ) : null;
         return feedbackFormMarkup;
@@ -128,8 +130,6 @@ FeedbackForm.propTypes = {
     postFeedback: PropTypes.func.isRequired,
     UI: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
-    // authenticated: PropTypes.bool.isRequired,
-    // is_admin: PropTypes.bool.isRequired,
     classes: PropTypes.object.isRequired,
     movieId: PropTypes.number.isRequired
 }
@@ -138,8 +138,6 @@ FeedbackForm.propTypes = {
 const mapStateToProps = state => ({
     UI: state.UI,
     user: state.user
-    // authenticated: state.user.authenticated,
-    // is_admin: state.user.is_admin
 })
 
 

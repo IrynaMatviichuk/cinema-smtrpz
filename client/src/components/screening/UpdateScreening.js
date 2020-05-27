@@ -5,71 +5,76 @@ import CustomButton from '../../util/CustomButton';
 
 // Redux
 import { connect } from 'react-redux';
-import {
-    postScreening,
-    getMovies,
-    getAuditoriums,
-    clearErrors
-} from '../../redux/actions/dataActions';
+import { getScreening, getMovies, getAuditoriums, updateScreening, clearErrors } from '../../redux/actions/dataActions';
 
 // MUI
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
 // Icons
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import CloseIcon from '@material-ui/icons/Close';
+import UpdateIcon from '@material-ui/icons/Update';
 
 
-const styles = {
+const styles = theme => ({
     submitButton: {
         position: 'relative',
         margin: '10px auto 10px auto',
         float: 'right'
     },
-    progressSpinner: {
-        position: 'absolute'
+    invisibleSeparator: {
+        border: 'none',
+        margin: 4
     },
+    // dialogContent: {
+    //     paddingTop: 20,
+    //     paddingBottom: 20
+    // },
     closeButton: {
         position: 'absolute',
         left: '90%',
-        top: '2%'
+        top: '1%'
     },
-    textField: {
-        margin: '10px auto 10px auto'
+    updateButton: {
+        position: 'absolute',
+        left: '90%',
+        top: '38%'
     },
-    label: {
-        marginTop: '15px'
+    spinnerDiv: {
+        textAlign: 'center',
+        marginTop: 50,
+        marginBottom: 50
+    },
+    visibleSeparator: {
+        width: '100%',
+        borderBottom: '1px solid rgba(0,0,0,0.1)',
+        marginBottom: 10
     }
-}
+})
+
 
 const numberFieldProps = {
     step: "1"
 }
 
 
-class PostScreening extends Component {
-        state = {
-            open: false,
-            movie_id_fk: '',
-            auditorium_id_fk: '',
-            price: undefined,
-            screening_date: undefined,
-            start_time: undefined,
-            errors: {}
-        };
-
-    componentDidMount() {
-        this.props.getMovies();
-        this.props.getAuditoriums();
+class UpdateScreening extends Component {
+    state = {
+        open: false,
+        movie_id_fk: '',
+        auditorium_id_fk: '',
+        price: '',
+        screening_date: '',
+        start_time: '',
+        errors: {}
     }
 
     componentWillReceiveProps(nextProps) {
@@ -79,9 +84,9 @@ class PostScreening extends Component {
 
         if (!nextProps.UI.errors && !nextProps.UI.loading) {
             this.setState({
-                movie_id_fk: '',
-                auditorium_id_fk: '',
-                price: '',
+                movie_id_fk: undefined,
+                auditorium_id_fk: undefined,
+                price: undefined,
                 screening_date: undefined,
                 start_time: undefined,
                 open: false,
@@ -92,39 +97,54 @@ class PostScreening extends Component {
 
     handleOpen = () => {
         this.setState({ open: true });
+        const screening = this.props.screenings.find(screening => screening.screening_id === this.props.screeningId);
+        this.setState({
+            movie_id_fk: screening.movie.movie_id,
+            auditorium_id_fk: screening.auditorium.auditorium_id,
+            price: String(screening.price),
+            screening_date: screening.screening_date,
+            start_time: screening.start_time
+        });
     }
 
     handleClose = () => {
+        this.setState({ open: false });
         this.props.clearErrors();
-        this.setState({ open: false, errors: {} });
     }
 
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
     }
 
-    handleSubmit = (event) => {
+    handleSubmit = event => {
         event.preventDefault();
 
-        const newScreening = {
+        const updatedScreening = {
             movie_id_fk: this.state.movie_id_fk,
             auditorium_id_fk: this.state.auditorium_id_fk,
             price: Number(this.state.price),
             screening_date: this.state.screening_date,
-            start_time: `${this.state.start_time}:00`
+            start_time: this.state.start_time
         };
 
-        this.props.postScreening(newScreening);
+        this.props.updateScreening(updatedScreening, this.props.screeningId);
     }
 
     render() {
-        const { classes, data: { movies, auditoriums }, UI: { loading }} = this.props;
+        const {
+            classes,
+            movies,
+            auditoriums,
+            UI: {
+                loading
+            }
+        } = this.props;
         const { errors } = this.state;
 
         return (
             <Fragment>
-                <CustomButton onClick={this.handleOpen} tip="Post a screening">
-                    <VisibilityIcon/>
+                <CustomButton onClick={this.handleOpen} tip="Update screening" tipClassName={classes.updateButton}>
+                    <UpdateIcon color="primary" />
                 </CustomButton>
                 <Dialog
                     open={this.state.open}
@@ -137,16 +157,15 @@ class PostScreening extends Component {
                         onClick={this.handleClose}
                         tipClassName={classes.closeButton}
                     >
-                        <CloseIcon/>
+                        <CloseIcon />
                     </CustomButton>
-                    <DialogTitle>Post a new screening</DialogTitle>
-                    <DialogContent>
+                    <DialogTitle>Update a screening</DialogTitle>
+                    <DialogContent className={this.dialogContent}>
                         <form onSubmit={this.handleSubmit}>
                             <InputLabel shrink className={classes.label}>Movie</InputLabel>
                             <Select
                                 name="movie_id_fk"
                                 label="Movie"
-                                // helperText={errors.movie_id_fk}
                                 value={this.state.movie_id_fk}
                                 error={errors.movie_id_fk ? true : false}
                                 className={classes.textField}
@@ -162,7 +181,6 @@ class PostScreening extends Component {
                             <Select
                                 name="auditorium_id_fk"
                                 label="Auditorium"
-                                // helperText={errors.auditorium_id_fk}
                                 value={this.state.auditorium_id_fk}
                                 error={errors.auditorium_id_fk ? true : false}
                                 className={classes.textField}
@@ -180,12 +198,13 @@ class PostScreening extends Component {
                                 inputProps={numberFieldProps}
                                 label="Price"
                                 placeholder="price"
+                                value={this.state.price}
                                 helperText={errors.price}
                                 error={errors.price ? true : false}
                                 className={classes.textField}
                                 onChange={this.handleChange}
                                 fullWidth
-                                InputLabelProps={{shrink: true}}
+                                InputLabelProps={{ shrink: true }}
                             />
                             <TextField
                                 name="screening_date"
@@ -197,7 +216,7 @@ class PostScreening extends Component {
                                 className={classes.textField}
                                 onChange={this.handleChange}
                                 fullWidth
-                                InputLabelProps={{shrink: true}}
+                                InputLabelProps={{ shrink: true }}
                             />
                             <TextField
                                 name="start_time"
@@ -209,7 +228,7 @@ class PostScreening extends Component {
                                 className={classes.textField}
                                 onChange={this.handleChange}
                                 fullWidth
-                                InputLabelProps={{shrink: true}}
+                                InputLabelProps={{ shrink: true }}
                             />
                             <Button
                                 type="submit"
@@ -220,7 +239,7 @@ class PostScreening extends Component {
                             >
                                 Submit
                                 {loading && (
-                                    <CircularProgress size={30} className={classes.progressSpinner}/>
+                                    <CircularProgress size={30} className={classes.progressSpinner} />
                                 )}
                             </Button>
                         </form>
@@ -232,27 +251,30 @@ class PostScreening extends Component {
 }
 
 
-PostScreening.propTypes = {
-    postScreening: PropTypes.func.isRequired,
-    getMovies: PropTypes.func.isRequired,
-    getAuditoriums: PropTypes.func.isRequired,
-    clearErrors: PropTypes.func.isRequired,
-    data: PropTypes.object.isRequired,
-    UI: PropTypes.object.isRequired
+UpdateScreening.propTypes = {
+    updateScreening: PropTypes.func.isRequired,
+    screeningId: PropTypes.number.isRequired,
+    userId: PropTypes.number.isRequired,
+    screenings: PropTypes.object.isRequired,
+    movies: PropTypes.object.isRequired,
+    auditoriums: PropTypes.object.isRequired,
+    UI: PropTypes.object.isRequired,
+    clearErrors: PropTypes.func.isRequired
 }
 
 
-const mapStateToProps = (state) => ({
-    data: state.data,
+const mapStateToProps = state => ({
+    screenings: state.data.screenings,
+    movies: state.data.movies,
+    auditoriums: state.data.auditoriums,
     UI: state.UI
 })
 
+
 const mapActionsToProps = {
-    postScreening,
-    getMovies,
-    getAuditoriums,
+    updateScreening,
     clearErrors
 }
 
 
-export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(PostScreening));
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(UpdateScreening));

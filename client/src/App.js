@@ -15,11 +15,13 @@ import { logoutUser, getUserData } from './redux/actions/userActions';
 // Components
 import Navbar from './components/layout/Navbar';
 import AuthRoute from './util/AuthRoute';
+import AdminRoute from './util/AdminRoute';
 
 // Pages
 import home from './pages/home';
 import login from './pages/login';
 import signup from './pages/signup';
+import movies from './pages/movies';
 
 
 const theme = createMuiTheme({
@@ -36,10 +38,7 @@ const theme = createMuiTheme({
       dark: '#b22a00',
       contrastText: '#fff'
     }
-  },
-  // typography: {
-  //   useNextVariants: true
-  // }
+  }
 });
 
 
@@ -77,6 +76,12 @@ class App extends Component {
                     path="/signup"
                     component={signup}
                   />
+                  {/* <AdminRoute
+                    exact
+                    path="/movies"
+                    component={movies}
+                  /> */}
+                  <Route exact path="/movies" component={movies}/>
                 </Switch>
               </div>
             </Router>
