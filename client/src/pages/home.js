@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-
 import Screening from '../components/screening/Screening';
 import Profile from '../components/Profile';
 
 // Redux
 import { connect } from 'react-redux';
 import { getScreenings } from '../redux/actions/dataActions';
+
+// MUI
+import Grid from '@material-ui/core/Grid';
 
 
 class home extends Component {

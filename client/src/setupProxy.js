@@ -10,6 +10,13 @@ module.exports = app => {
         })
     ),
     app.use(
+        '/auditorium/*',
+        createProxyMiddleware({
+            target: 'http://localhost:8081',
+            changeOrigin: true,
+        })
+    ),
+    app.use(
         '/movie/*',
         createProxyMiddleware({
             target: 'http://localhost:8081',
@@ -27,6 +34,20 @@ module.exports = app => {
         '/auditorium/*',
         createProxyMiddleware({
             target: 'http://localhost:8081',
+            changeOrigin: true,
+        })
+    ),
+    app.use(
+        '/booking/*',
+        createProxyMiddleware({
+            target: 'http://localhost:8081',
+            changeOrigin: true,
+        })
+    ),
+    app.use(
+        '/book/*',
+        createProxyMiddleware({
+            target: 'http://localhost:8082',
             changeOrigin: true,
         })
     ),

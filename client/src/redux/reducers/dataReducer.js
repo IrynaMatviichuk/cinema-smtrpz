@@ -10,6 +10,11 @@ import {
     UPDATE_MOVIE,
     DELETE_MOVIE,
     SET_AUDITORIUMS,
+    SET_AUDITORIUM,
+    SET_BOOKINGS,
+    SET_USER_BOOKINGS,
+    SET_BOOKED_SEATS,
+    POST_BOOKING,
     SET_GENRES,
     POST_FEEDBACK,
     DELETE_FEEDBACK,
@@ -23,7 +28,11 @@ const initialState = {
     movies: [],
     movie: {},
     auditoriums: [],
+    auditorium: {},
     genres: [],
+    bookedSeats: [],
+    userBookings: [],
+    bookings: [],
     loading: false
 };
 
@@ -39,6 +48,18 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 screenings: action.payload,
+                loading: false
+            }
+        case SET_BOOKINGS:
+            return {
+                ...state,
+                bookings: action.payload,
+                loading: false
+            }
+        case SET_USER_BOOKINGS:
+            return {
+                ...state,
+                userBookings: action.payload,
                 loading: false
             }
         case SET_SCREENING:
@@ -75,7 +96,7 @@ export default function (state = initialState, action) {
             let movieToUpdate = state.movies.findIndex(movie => movie.movie_id === action.payload.movie_id);
             state.movies[movieToUpdate] = action.payload;
             return {
-                ... state,
+                ...state,
                 // movie: action.payload
             }
         case UPDATE_SCREENING:
@@ -104,6 +125,28 @@ export default function (state = initialState, action) {
                 ...state,
                 auditoriums: action.payload,
                 loading: false
+            }
+        case SET_AUDITORIUM:
+            return {
+                ...state,
+                auditorium: action.payload
+            }
+        case SET_BOOKED_SEATS:
+            return {
+                ...state,
+                bookedSeats: action.payload
+            }
+        case POST_BOOKING:
+            return {
+                ...state,
+                bookedSeats: [
+                    action.payload.seat_id_fk.seat_id,
+                    ...state.bookedSeats
+                ],
+                userBookings: [
+                    action.payload,
+                    ...state.userBookings
+                ]
             }
         case SET_GENRES:
             return {

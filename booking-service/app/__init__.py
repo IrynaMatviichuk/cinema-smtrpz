@@ -13,7 +13,7 @@ def create_app(config_name):
     db.init_app(app)
 
     from .booking import booking as booking_blueprint
-    app.register_blueprint(booking_blueprint, url_prefix="/booking")
+    app.register_blueprint(booking_blueprint, url_prefix="/book")
 
     @app.route("/url/map", methods=["GET"])
     def url_map():

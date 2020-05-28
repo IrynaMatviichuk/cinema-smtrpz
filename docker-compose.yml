@@ -25,14 +25,14 @@ services:
     depends_on:
       - postgres
 
-  # booking-service:
-  #   build:
-  #     context: booking-service
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8082:8082"
-  #   depends_on:
-  #     - postgres
+  booking-service:
+    build:
+      context: booking-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
 
   authentication-service:
     build:

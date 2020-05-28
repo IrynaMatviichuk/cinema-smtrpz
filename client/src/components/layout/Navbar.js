@@ -17,6 +17,7 @@ import Button from '@material-ui/core/Button';
 
 // Icons
 import HomeIcon from '@material-ui/icons/Home';
+import TheatersIcon from '@material-ui/icons/Theaters';
 
 
 const styles = (theme) => ({})
@@ -28,14 +29,28 @@ class Navbar extends Component {
     }
 
     render() {
-        const { classes, user: { authenticated, is_admin } } = this.props;
+        const { classes, user: { authenticated, is_admin, cinema_user_id } } = this.props;
         return (
             <AppBar>
                 <Toolbar className="nav-container">
                     {authenticated ? (
                         <Fragment>
-                            {is_admin && <PostMovie/>}
-                            {is_admin && <PostScreening/>}
+                            {is_admin && <PostMovie />}
+                            {is_admin && <PostScreening />}
+                            {!is_admin && (
+                                <Link to={`/bookings/user/${cinema_user_id}`}>
+                                    <CustomButton tip="My bookings">
+                                        <TheatersIcon />
+                                    </CustomButton>
+                                </Link>
+                            )}
+                            {is_admin && (
+                                <Link to="/bookings/admin">
+                                    <CustomButton tip="Bookings">
+                                        <TheatersIcon />
+                                    </CustomButton>
+                                </Link>
+                            )}
                             <Link to="/">
                                 <CustomButton tip="Home">
                                     <HomeIcon />
@@ -49,13 +64,13 @@ class Navbar extends Component {
                             <Fragment>
                                 <Button color="inherit" component={Link} to="/">
                                     Home
-                            </Button>
+                                </Button>
                                 <Button color="inherit" component={Link} to="/login">
                                     Login
-                            </Button>
+                                </Button>
                                 <Button color="inherit" component={Link} to="/signup">
                                     Signup
-                            </Button>
+                                </Button>
                             </Fragment>
                         )}
                 </Toolbar>

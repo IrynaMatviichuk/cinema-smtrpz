@@ -22,6 +22,9 @@ import home from './pages/home';
 import login from './pages/login';
 import signup from './pages/signup';
 import movies from './pages/movies';
+import booking from './pages/booking';
+import userBookings from './pages/userBookings';
+import adminBookings from './pages/adminBookings';
 
 
 const theme = createMuiTheme({
@@ -76,12 +79,10 @@ class App extends Component {
                     path="/signup"
                     component={signup}
                   />
-                  {/* <AdminRoute
-                    exact
-                    path="/movies"
-                    component={movies}
-                  /> */}
                   <Route exact path="/movies" component={movies}/>
+                  <Route exact path="/booking/:screeningId/:auditoriumId" component={booking}/>
+                  <Route exact path="/bookings/user/:userId" component={userBookings}/>
+                  <Route exact path="/bookings/admin" component={adminBookings}/>
                 </Switch>
               </div>
             </Router>

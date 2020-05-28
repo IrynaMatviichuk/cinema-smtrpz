@@ -13,6 +13,11 @@ import {
     UPDATE_MOVIE,
     DELETE_MOVIE,
     SET_AUDITORIUMS,
+    SET_AUDITORIUM,
+    SET_BOOKINGS,
+    SET_USER_BOOKINGS,
+    SET_BOOKED_SEATS,
+    POST_BOOKING,
     SET_GENRES,
     POST_FEEDBACK,
     DELETE_FEEDBACK,
@@ -20,6 +25,7 @@ import {
     CLEAR_ERRORS
 } from '../types';
 import axios from 'axios';
+import { sortSeats } from '../../util/sorting/sortSeats';
 
 
 // Get all screenings
@@ -225,6 +231,103 @@ export const getAuditoriums = () => dispatch => {
                 payload: []
             });
         });
+}
+
+
+// Get auditorium
+export const getAuditorium = auditoriumId => dispatch => {
+    dispatch({ type: LOADING_UI });
+    axios
+        .get(`/auditorium/get/${auditoriumId}`)
+        .then(res => {
+            dispatch({
+                type: SET_AUDITORIUM,
+                payload: sortSeats(res.data)
+            });
+            dispatch({ type: STOP_LOADING_UI });
+        })
+        .catch(err => console.log(err));
+}
+
+
+// Get all bookings
+export const getBookings = () => dispatch => {
+    dispatch({ type: LOADING_DATA });
+    axios
+        .get('/booking/select/all')
+        .then(res => {
+            dispatch({
+                type: SET_BOOKINGS,
+                payload: res.data
+            });
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_BOOKINGS,
+                payload: []
+            });
+        });
+}
+
+
+// Get all user bookings
+export const getUserBookings = (userId) => dispatch => {
+    dispatch({ type: LOADING_DATA });
+    axios
+        .get(`/booking/select/cinema_user/${userId}`)
+        .then(res => {
+            console.log(res.data)
+            dispatch({
+                type: SET_USER_BOOKINGS,
+                payload: res.data
+            });
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_USER_BOOKINGS,
+                payload: []
+            })
+        });
+}
+
+
+// Get booked seats
+export const getBookedSeats = screeningId => dispatch => {
+    dispatch({ type: LOADING_UI });
+    axios
+        .get(`/booking/select/booked/seats/${screeningId}`)
+        .then(res => {
+            console.log(res.data)
+            dispatch({
+                type: SET_BOOKED_SEATS,
+                payload: res.data
+            });
+            dispatch({ type: STOP_LOADING_UI });
+        })
+        .catch(err => console.log(err));
+}
+
+
+// Post a booking
+export const postBooking = newBooking => dispatch => {
+    dispatch({ type: LOADING_UI });
+    for (let seat of newBooking) {
+        axios
+            .post('/book/insert', seat)
+            .then(res => {
+                dispatch({
+                    type: POST_BOOKING,
+                    payload: res.data
+                });
+                dispatch(clearErrors());
+            })
+            .catch(err => {
+                dispatch({
+                    type: SET_ERRORS,
+                    payload: err.response.data
+                });
+            })
+    }
 }
 
 

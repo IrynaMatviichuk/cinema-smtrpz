@@ -24,7 +24,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
 // Icons
-import TheatersIcon from '@material-ui/icons/Theaters';
+import MovieIcon from '@material-ui/icons/Movie';
 import CloseIcon from '@material-ui/icons/Close';
 
 
@@ -115,7 +115,7 @@ class PostMovie extends Component {
         return (
             <Fragment>
                 <CustomButton onClick={this.handleOpen} tip="Post a movie">
-                    <TheatersIcon/>
+                    <MovieIcon/>
                 </CustomButton>
                 <Dialog
                     open={this.state.open}

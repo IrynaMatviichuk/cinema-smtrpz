@@ -7,7 +7,6 @@ import CustomButton from '../../util/CustomButton';
 import DeleteMovie from './DeleteMovie';
 import UpdateMovie from './UpdateMovie';
 import MovieDialog from './MovieDialog';
-// import ScreeningDialog from './ScreeningDialog';
 
 
 // MUI
@@ -62,6 +61,10 @@ class Movie extends Component {
             <DeleteMovie movieId={movie_id} />
         ) : null;
 
+        const updateButton = authenticated && is_admin ? (
+            <UpdateMovie movieId={movie_id} userId={cinema_user_id}/>
+        ) : null;
+
         const averageScore = feedbacks ? (
             Math.round(feedbacks.reduce((accum, iter) => accum + iter.score, 0) / feedbacks.length * 100) / 100
         ) : undefined;
@@ -84,7 +87,7 @@ class Movie extends Component {
                         </CustomButton>
                         <span> {feedbacksCount} feedbacks</span>
                         {deleteButton}
-                        <UpdateMovie movieId={movie_id} userId={cinema_user_id}/>
+                        {updateButton}
                         <MovieDialog movieId={movie_id} userId={cinema_user_id}/>
                     </CardContent>
                 </Paper>

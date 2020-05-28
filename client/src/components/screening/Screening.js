@@ -10,6 +10,7 @@ import ScreeningDialog from './ScreeningDialog';
 
 
 // MUI
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -39,15 +40,19 @@ class Screening extends Component {
         const {
             classes,
             screening: {
-                auditorium,
+                auditorium: {
+                    auditorium_id,
+                    name
+                },
                 end_time,
                 movie: {
                     description,
                     duration,
-                    genre: {
-                        genre_id,
-                        name
-                    },
+                    genre,
+                    // {
+                    //     genre_id,
+                    //     name
+                    // },
                     movie_id,
                     title,
                     feedbacks
@@ -68,6 +73,16 @@ class Screening extends Component {
             <DeleteScreening screeningId={screening_id} />
         ) : null;
 
+        const updateButton = authenticated && is_admin ? (
+            <UpdateScreening screeningId={screening_id} userId={cinema_user_id}/>
+        ) : null;
+
+        const bookButton = authenticated && !is_admin ? (
+            <Button color="inherit" component={Link} to={`/booking/${screening_id}/${auditorium_id}`}>
+                Book
+            </Button>
+        ) : null;
+
         const averageScore = feedbacks?(
             Math.round(feedbacks.reduce((accum, iter) => accum + iter.score, 0) / feedbacks.length * 100) / 100
         ) : null;
@@ -81,7 +96,8 @@ class Screening extends Component {
                         <Typography variant="body2" color="textSecondary">Date: {screening_date}</Typography>
                         <Typography variant="body2" color="textSecondary">Time: {start_time}</Typography>
                         <Typography variant="body2" color="textSecondary">Duration: {duration} min</Typography>
-                        <Typography variant="body2" color="textSecondary">Genre: {name}</Typography>
+                        <Typography variant="body2" color="textSecondary">Genre: {genre.name}</Typography>
+                        <Typography variant="body2" color="textSecondary">Auditorium: {name}</Typography>
                         <Typography variant="body1">Price: {price} UAH</Typography>
                         <CustomButton tip="Feedbacks">
                             <GradeIcon color="primary" />
@@ -92,7 +108,8 @@ class Screening extends Component {
                         </CustomButton>
                         <span> {feedbacksCount} feedbacks</span>
                         {deleteButton}
-                        <UpdateScreening screeningId={screening_id} userId={cinema_user_id}/>
+                        {updateButton}
+                        {bookButton}
                         <ScreeningDialog screeningId={screening_id} userId={cinema_user_id}/>
                     </CardContent>
                 </Paper>
