@@ -63,7 +63,7 @@ create TABLE booking(
 
 create TABLE feedback(
   feedback_id serial PRIMARY key,
-  score INTEGER not NULL CHECK (score >= 1 and score <= 5),
+  score INTEGER not NULL CHECK (score >= 1 and score <= 10),
   review TEXT not NULL,
   feedback_date date not NULL DEFAULT now()::date,
   feedback_time time not NULL DEFAULT now()::TIME,

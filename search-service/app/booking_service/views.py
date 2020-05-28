@@ -6,8 +6,8 @@ from app.booking_service import booking_service
 from app.models import Booking
 
 
-@admin_access
 @booking_service.route("/select/all", methods=["GET"])
+@admin_access
 def select_all():
     all_bookings = [booking.to_dict() for booking in Booking.query.all()]
     return jsonify(all_bookings)

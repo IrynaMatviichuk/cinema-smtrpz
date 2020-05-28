@@ -13,13 +13,18 @@ import { SET_AUTHENTICATED } from './redux/types';
 import { logoutUser, getUserData } from './redux/actions/userActions';
 
 // Components
-import Navbar from './components/Navbar';
+import Navbar from './components/layout/Navbar';
 import AuthRoute from './util/AuthRoute';
+import AdminRoute from './util/AdminRoute';
 
 // Pages
 import home from './pages/home';
 import login from './pages/login';
 import signup from './pages/signup';
+import movies from './pages/movies';
+import booking from './pages/booking';
+import userBookings from './pages/userBookings';
+import adminBookings from './pages/adminBookings';
 
 
 const theme = createMuiTheme({
@@ -45,7 +50,6 @@ if (token) {
   const decodedToken = jwtDecode(token);
   if (decodedToken.exp * 1000 < Date.now()) {
     store.dispatch(logoutUser());
-    console.log('here', window.location.href);
     window.location.href = "/login";
   } else {
     store.dispatch({ type: SET_AUTHENTICATED });
@@ -75,6 +79,10 @@ class App extends Component {
                     path="/signup"
                     component={signup}
                   />
+                  <Route exact path="/movies" component={movies}/>
+                  <Route exact path="/booking/:screeningId/:auditoriumId" component={booking}/>
+                  <Route exact path="/bookings/user/:userId" component={userBookings}/>
+                  <Route exact path="/bookings/admin" component={adminBookings}/>
                 </Switch>
               </div>
             </Router>

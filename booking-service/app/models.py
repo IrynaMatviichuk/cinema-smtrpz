@@ -150,7 +150,6 @@ class CinemaUser(db.Model):
         return {
             "cinema_user_id": self.cinema_user_id,
             "username": self.username,
-            "password": self.password,
             "firstname": self.firstname,
             "lastname": self.lastname,
             "is_admin": self.is_admin,

@@ -39,8 +39,8 @@ def insert():
 
     if screening.has_overlaps():
         return Response(dumps({
-            "start_time": ["this screening overlaps with another screening in this auditorium"]
-        }))
+            "start_time": "this screening overlaps with another screening in this auditorium"
+        }), status=400)
     else:
         db.session.add(screening)
         db.session.commit()
@@ -57,8 +57,11 @@ def update(screening_id):
             error: ", ".join(values) for (error, values) in errors.items()
         }), status=400)
 
+    movie = Movie.query.get_or_404(screening_data.get("movie_id_fk"))
+    auditorium = Auditorium.query.get_or_404(screening_data.get("auditorium_id_fk"))
     screening = Screening.query.get_or_404(screening_id)
-    movie = Movie.query.get(screening.movie_id_fk)
+    screening.movie_id_fk = movie.movie_id
+    screening.auditorium_id_fk = auditorium.auditorium_id
     screening.price = screening_data.get("price", screening.price)
     screening.screening_date = screening_data.get("screening_date", screening.screening_date.strftime("%Y-%m-%d"))
     screening.start_time = screening_data.get("start_time", screening.start_time.strftime("%H:%M:%S"))
@@ -69,8 +72,8 @@ def update(screening_id):
 
     if screening.has_update_overlaps():
         return Response(dumps({
-            "start_time": ["this screening overlaps with another screening in this auditorium"]
-        }))
+            "start_time": "this screening overlaps with another screening in this auditorium"
+        }), status=400)
     else:
         db.session.commit()
         return jsonify(screening.to_dict())

@@ -33,6 +33,7 @@ class Movie(db.Model):
     genre_id_fk = db.Column(db.Integer, db.ForeignKey("genre.genre_id"), nullable=False)
     description = db.Column(db.Text, nullable=False)
     screenings = db.relationship("Screening", backref="movie", lazy=False)
+    feedbacks = db.relationship("Feedback", backref="movie", lazy=False)
 
     def __init__(self, title, duration, genre_id_fk, description):
         self.title = title
@@ -52,25 +53,9 @@ class Movie(db.Model):
             "title": self.title,
             "duration": self.duration,
             "genre": self.genre_id_fk if use_id else self.genre.to_dict(),
-            "description": self.description
+            "description": self.description,
+            "feedbacks": [feedback.to_dict(use_id=True) for feedback in self.feedbacks],
         }
-
-    @validates("title")
-    def validate_title(self, key, title):
-        if Movie.query.filter(Movie.title == title).first():
-            raise AssertionError("Movie with such title already exists")
-
-        if len(title) < 3 or len(title)> 50:
-            raise AssertionError("Movie title must be between 3 and 50 characters")
-
-        return title
-
-    @validates("duration")
-    def validate_duration(self, key, duration):
-        if duration < 60 or duration > 240:
-            raise AssertionError("Duration must be between 60 and 240 minutes")
-
-        return duration
 
 
 class Auditorium(db.Model):
@@ -96,23 +81,9 @@ class Auditorium(db.Model):
             ] if include_seats else [],
         }
 
-    @validates("name")
-    def validate_title(self, key, name):
-        if Movie.query.filter(Auditorium.name == name).first():
-            raise AssertionError("Auditorium with such title already exists")
-
-        if len(name) < 3 or len(name)> 30:
-            raise AssertionError("Auditorium name must be between 3 and 30 characters")
-
-        return name
-
 
 class Screening(db.Model):
-    #TODO: unique constraint validation
     __tablename__ = "screening"
-    # __table_args__ = (
-    #     db.UniqueConstraint("auditorium_id_fk", "screening_date", "start_time", name="unique_screening"),
-    # )
 
     screening_id = db.Column(db.Integer, primary_key=True)
     movie_id_fk = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), nullable=False)
@@ -160,27 +131,6 @@ class Screening(db.Model):
 
         return overlaps_number > 0
 
-    @validates("price")
-    def validate_price(self, key, price):
-        if price <= 0:
-            raise AssertionError("Price must be a positive number")
-
-        return price
-
-    @validates("screening_date")
-    def validate_screening_date(self, key, screening_date):
-        if screening_date <= datetime.datetime.now().strftime("%Y-%m-%d"):
-            raise AssertionError("You can schedule screening tomorrow or later")
-
-        return screening_date
-
-    @validates("start_time")
-    def validate_start_time(self, key, start_time):
-        if start_time < working_day_start or start_time > working_day_end:
-            raise AssertionError(f"Screening can start between {working_day_start} and {working_day_end}")
-
-        return start_time
-
 
 class Seat(db.Model):
     __tablename__ = "seat"
@@ -216,6 +166,7 @@ class CinemaUser(db.Model):
     lastname = db.Column(db.String(20), nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
     bookings = db.relationship("Booking", backref="cinema_user", lazy=False)
+    feedbacks = db.relationship("Feedback", backref="cinema_user", lazy=False)
 
     def __repr__(self):
         return (
@@ -228,7 +179,6 @@ class CinemaUser(db.Model):
         return {
             "cinema_user_id": self.cinema_user_id,
             "username": self.username,
-            "password": self.password,
             "firstname": self.firstname,
             "lastname": self.lastname,
             "is_admin": self.is_admin,
@@ -260,4 +210,34 @@ class Booking(db.Model):
             "seat_id_fk": self.seat.to_dict(),
             "booking_date": self.booking_date.strftime("%Y-%m-%d"),
             "booking_time": self.booking_time.strftime("%H:%M:%S"),
+        }
+
+
+class Feedback(db.Model):
+    __tablename__ = "feedback"
+
+    feedback_id = db.Column(db.Integer, primary_key=True)
+    score = db.Column(db.Integer, nullable=False)
+    review = db.Column(db.Text, nullable=False)
+    feedback_date = db.Column(db.Date, default=datetime.datetime.now().date(), nullable=False)
+    feedback_time = db.Column(db.Time, default=datetime.datetime.now().time(), nullable=False)
+    movie_id_fk = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), nullable=False)
+    cinema_user_id_fk = db.Column(db.Integer, db.ForeignKey("cinema_user.cinema_user_id"), nullable=False)
+
+    def __repr__(self):
+        return (
+            f"<Feedback: (feedback_id={self.feedback_id}, "
+            f"score={self.score}, review={self.review}, "
+            f"feedback_date={self.feedback_date}, feedback_time={self.feedback_time}, movie_id_fk={self.movie_id_fk}, cinema_user_id_fk={self.cinema_user_id_fk})>"
+        )
+
+    def to_dict(self, use_id=False):
+        return {
+            "feedback_id": self.feedback_id,
+            "score": self.score,
+            "review": self.review,
+            "feedback_date": self.feedback_date.strftime("%Y-%m-%d"),
+            "feedback_time": self.feedback_time.strftime("%H:%M:%S"),
+            "movie": self.movie_id_fk if use_id else self.movie.to_dict(),
+            "cinema_user": self.cinema_user.to_dict()# self.cinema_user_id_fk if use_id else self.cinema_user.to_dict(),
         }

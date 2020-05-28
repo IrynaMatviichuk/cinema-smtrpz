@@ -36,13 +36,17 @@ class ScreeningCreateValidator:
     def validate(self, new_screening):
         is_valid = self.validator.validate(new_screening)
         errors = self.validator.errors
-        if new_screening.get("screening_date") <= datetime.now().strftime("%Y-%m-%d"):
+        if not "screening_date" in errors and (
+            new_screening.get("screening_date") <= datetime.now().strftime("%Y-%m-%d")
+        ):
             is_valid = False
             errors.update({
                 "screening_date": ["can only schedule screening tomorrow or later"]
             })
 
-        if new_screening.get("start_time") < working_day_start or new_screening.get("start_time") > working_day_end:
+        if not "start_time" in errors and (
+            new_screening.get("start_time") < working_day_start or new_screening.get("start_time") > working_day_end
+        ):
             is_valid = False
             errors.update({
                 "start_time": [f"screening can start between {working_day_start} and {working_day_end}"]
@@ -83,13 +87,19 @@ class ScreeningUpdateValidator:
     def validate(self, new_screening):
         is_valid = self.validator.validate(new_screening)
         errors = self.validator.errors
-        if new_screening.get("screening_date") and new_screening.get("screening_date") <= datetime.now().strftime("%Y-%m-%d"):
+        if not "screening_date" in errors and (
+            new_screening.get("screening_date") and new_screening.get("screening_date") <= datetime.now().strftime("%Y-%m-%d")
+        ):
             is_valid = False
             errors.update({
                 "screening_date": ["can only schedule screening tomorrow or later"]
             })
 
-        if new_screening.get("start_time") and (new_screening.get("start_time") < working_day_start or new_screening.get("start_time") > working_day_end):
+        if not "start_time" in errors and (
+            new_screening.get("start_time") and (
+                new_screening.get("start_time") and new_screening.get("start_time") < working_day_start or new_screening.get("start_time") > working_day_end
+            )
+        ):
             is_valid = False
             errors.update({
                 "start_time": [f"screening can start between {working_day_start} and {working_day_end}"]

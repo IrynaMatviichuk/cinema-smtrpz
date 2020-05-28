@@ -46,7 +46,7 @@ class UserRegistrationValidator:
     def validate(self, new_user):
         is_valid = self.validator.validate(new_user)
         errors = self.validator.errors
-        if newUser.get("password") != newUser.get("confirmPassword"):
+        if new_user.get("password") != new_user.get("confirmPassword"):
             is_valid = False
             errors.update({"confirmPassword": ["must match with password"]})
 

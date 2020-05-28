@@ -9,7 +9,7 @@ const initialState = {
     password: undefined,
     firstname: undefined,
     lastname: undefined,
-    is_admin: undefined
+    is_admin: false
 };
 
 
