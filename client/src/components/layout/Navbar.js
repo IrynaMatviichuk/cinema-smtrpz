@@ -44,13 +44,6 @@ class Navbar extends Component {
                                     </CustomButton>
                                 </Link>
                             )}
-                            {is_admin && (
-                                <Link to="/bookings/admin">
-                                    <CustomButton tip="Bookings">
-                                        <TheatersIcon />
-                                    </CustomButton>
-                                </Link>
-                            )}
                             <Link to="/">
                                 <CustomButton tip="Home">
                                     <HomeIcon />

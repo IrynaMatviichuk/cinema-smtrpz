@@ -46,7 +46,7 @@ const styles = theme => ({
     updateButton: {
         position: 'absolute',
         left: '90%',
-        top: '35%'
+        top: '55px'
     },
     spinnerDiv: {
         textAlign: 'center',

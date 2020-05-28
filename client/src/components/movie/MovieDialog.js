@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
-// import Feedbacks from './Feedbacks';
-// import FeedbackForm from './FeedbackForm';
+import Feedbacks from '../feedbacks/Feedbacks';
+import FeedbackForm from '../screening/FeedbackForm';
 import CustomButton from '../../util/CustomButton';
 import { Link } from 'react-router-dom';
 
@@ -77,7 +77,8 @@ class MovieDialog extends Component {
                 title,
                 duration,
                 genre,
-                description
+                description,
+                feedbacks
             },
             UI: {
                 loading
@@ -99,6 +100,8 @@ class MovieDialog extends Component {
                                 <Typography variant="body2" color="textSecondary">Description: {description}</Typography>
                             </Grid>
                             <hr className={classes.visibleSeparator}/>
+                            <FeedbackForm movieId={movie_id}/>
+                            <Feedbacks feedbacks={feedbacks} movieId={movie_id}/>
                         </Fragment>
                     )}
                 </Grid>

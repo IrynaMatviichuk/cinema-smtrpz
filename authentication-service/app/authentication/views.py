@@ -13,7 +13,54 @@ from app.validators.user_registration_validator import UserRegistrationValidator
 from config import Config
 
 
-def login_required(f):
+# def login_required(f):
+#     @wraps(f)
+#     def decorator(*args, **kwargs):
+#         token = None
+#         if "Authorization" in request.headers:
+#             token = request.headers["Authorization"]
+
+#         if not token:
+#             return Response(dumps({
+#                 "general": "no token"
+#             }), status=401)
+
+#         try:
+#             data = jwt.decode(token.split(" ")[1], current_app.config["SECRET_KEY"])
+#             current_cinema_user = CinemaUser.query.filter_by(cinema_user_id=data.get("public_id")).first()
+#             g.current_user = current_cinema_user.to_dict()
+#         except:
+#             return Response(dumps({
+#                 "general": "invalid token"
+#             }), status=401)
+
+#         return f(*args, **kwargs)
+#     return decorator
+
+
+# def admin_access(f):
+#     @wraps(f)
+#     def decorator(*args, **kwargs):
+#         token = None
+#         if "x-access-tokens" in request.headers:
+#             token = request.headers["x-access-tokens"]
+
+#         if not token:
+#             return jsonify({"messane": "token is missing"})
+
+#         try:
+#             data = jwt.decode(token, current_app.config["SECRET_KEY"])
+#             current_cinema_user = CinemaUser.query.filter_by(cinema_user_id=data.get("public_id")).first()
+#         except:
+#             return jsonify({"message": "token is invalid"})
+
+#         if not current_cinema_user.is_admin:
+#             return jsonify({"message": "not enough rights"})
+
+#         return f(*args, **kwargs)
+#     return decorator
+
+def user_access(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         token = None
@@ -42,20 +89,26 @@ def admin_access(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         token = None
-        if "x-access-tokens" in request.headers:
-            token = request.headers["x-access-tokens"]
+        if "Authorization" in request.headers:
+            token = request.headers["Authorization"]
 
         if not token:
-            return jsonify({"messane": "token is missing"})
+            return Response(dumps({
+                "general": "no token"
+            }), status=401)
 
         try:
-            data = jwt.decode(token, current_app.config["SECRET_KEY"])
+            data = jwt.decode(token.split(" ")[1], current_app.config["SECRET_KEY"])
             current_cinema_user = CinemaUser.query.filter_by(cinema_user_id=data.get("public_id")).first()
+            if not current_cinema_user.is_admin:
+                return Response(dumps({
+                    "general": "no access rights"
+                }), status=401)
+            g.current_user = current_cinema_user.to_dict()
         except:
-            return jsonify({"message": "token is invalid"})
-
-        if not current_cinema_user.is_admin:
-            return jsonify({"message": "not enough rights"})
+            return Response(dumps({
+                "general": "invalid token"
+            }), status=401)
 
         return f(*args, **kwargs)
     return decorator
@@ -119,6 +172,13 @@ def login():
 
 
 @authentication.route("/user", methods=["GET"])
-@login_required
+@user_access
 def get_user():
     return Response(dumps(g.current_user), status=200)
+
+
+@authentication.route("/users", methods=["GET"])
+@admin_access
+def get_users():
+    all_users = [user.to_dict() for user in CinemaUser.query.all() if not user.is_admin]
+    return jsonify(all_users)

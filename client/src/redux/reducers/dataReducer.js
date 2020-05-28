@@ -19,6 +19,7 @@ import {
     POST_FEEDBACK,
     DELETE_FEEDBACK,
     LOADING_DATA,
+    SET_USERS
 } from '../types';
 
 
@@ -33,6 +34,7 @@ const initialState = {
     bookedSeats: [],
     userBookings: [],
     bookings: [],
+    users: [],
     loading: false
 };
 
@@ -96,15 +98,13 @@ export default function (state = initialState, action) {
             let movieToUpdate = state.movies.findIndex(movie => movie.movie_id === action.payload.movie_id);
             state.movies[movieToUpdate] = action.payload;
             return {
-                ...state,
-                // movie: action.payload
+                ...state
             }
         case UPDATE_SCREENING:
             let screeningToUpdate = state.screenings.findIndex(screening => screening.screening_id === action.payload.screening_id);
             state.screenings[screeningToUpdate] = action.payload;
             return {
-                ...state,
-                // screening: action.payload
+                ...state
             }
         case POST_MOVIE:
             return {
@@ -157,17 +157,29 @@ export default function (state = initialState, action) {
         case POST_FEEDBACK:
             return {
                 ...state,
-                screening: {
-                    ...state.screening,
-                    movie: {
-                        ...state.screening.movie,
-                        feedbacks: [action.payload, ...state.screening.movie.feedbacks]
-                    }
+                movie: {
+                    ...state.movie,
+                    feedbacks: [action.payload, ...state.movie.feedbacks]
                 }
             }
         case DELETE_FEEDBACK:
+            let feedbackMovieIndex = state.movies.findIndex(movie => movie.movie_id === action.payload.movieId);
+            let feedbackIndex = state.movies[feedbackMovieIndex].feedbacks.findIndex(feedback => feedback.feedback_id === action.payload.feedbackId);
+            state.movies[feedbackMovieIndex].feedbacks.splice(feedbackIndex, 1);
+            feedbackIndex = state.movie.feedbacks.findIndex(feedback => feedback.feedback_id === action.payload.feedbackId);
+            state.movie.feedbacks.splice(feedbackIndex, 1);
             return {
-                ...state
+                ...state,
+                movie: {
+                    ...state.movie,
+                    feedbacks: [...state.movie.feedbacks]
+                }
+            }
+        case SET_USERS:
+            return {
+                ...state,
+                users: action.payload,
+                loading: false
             }
         default:
             return state;

@@ -1,8 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
-import Feedbacks from './Feedbacks';
-import FeedbackForm from './FeedbackForm';
 import CustomButton from '../../util/CustomButton';
 import { Link } from 'react-router-dom';
 
@@ -104,8 +102,6 @@ class ScreeningDialog extends Component {
                                 <Typography variant="body1">Price: {price} UAH</Typography>
                             </Grid>
                             <hr className={classes.visibleSeparator}/>
-                            {/* <FeedbackForm movieId={movie.movie_id}/> */}
-                            {/* <Feedbacks feedbacks={movie.feedbacks} screeningId={screening_id}/> */}
                         </Fragment>
                     )}
                 </Grid>

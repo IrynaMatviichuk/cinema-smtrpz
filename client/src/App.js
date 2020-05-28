@@ -68,7 +68,7 @@ class App extends Component {
               <Navbar />
               <div className="container">
                 <Switch>
-                  <Route exact path="/" component={home} />
+                  <Route exact path="/" component={movies} />
                   <AuthRoute
                     exact
                     path="/login"
@@ -79,10 +79,10 @@ class App extends Component {
                     path="/signup"
                     component={signup}
                   />
-                  <Route exact path="/movies" component={movies}/>
+                  <Route exact path="/screenings" component={home}/>
                   <Route exact path="/booking/:screeningId/:auditoriumId" component={booking}/>
                   <Route exact path="/bookings/user/:userId" component={userBookings}/>
-                  <Route exact path="/bookings/admin" component={adminBookings}/>
+                  <Route exact path="/bookings" component={adminBookings}/>
                 </Switch>
               </div>
             </Router>

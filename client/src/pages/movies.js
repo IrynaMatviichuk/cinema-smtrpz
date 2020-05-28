@@ -16,10 +16,12 @@ class movies extends Component {
     }
 
     render() {
-        const { data: { movies, loading }, authenticated} = this.props;
+        const { data: { movies, loading }, authenticated } = this.props;
+        console.log(movies);
         let moviesMarkup = !loading ? (
             movies.map(movie => <Movie key={movie.movie_id} movie={movie} />)
         ) : (<p>Loading ...</p>);
+
         return (
             <Grid container spacing={16}>
                 <Grid item sm={8} xs={12}>

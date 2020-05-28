@@ -22,10 +22,11 @@ import {
     POST_FEEDBACK,
     DELETE_FEEDBACK,
     SET_ERRORS,
-    CLEAR_ERRORS
+    CLEAR_ERRORS,
+    SET_USERS
 } from '../types';
 import axios from 'axios';
-import { sortSeats } from '../../util/sorting/sortSeats';
+import { sortSeats, sortMoviesData } from '../../util/sortings';
 
 
 // Get all screenings
@@ -44,6 +45,26 @@ export const getScreenings = () => dispatch => {
                 type: SET_SCREENINGS,
                 payload: []
             })
+        });
+}
+
+
+// Get all users
+export const getUsers = () => dispatch => {
+    dispatch({ type: LOADING_DATA });
+    axios
+        .get('/auth/users')
+        .then(res => {
+            dispatch({
+                type: SET_USERS,
+                payload: res.data
+            });
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_USERS,
+                payload: []
+            });
         });
 }
 
@@ -129,7 +150,7 @@ export const getMovies = () => dispatch => {
         .then(res => {
             dispatch({
                 type: SET_MOVIES,
-                payload: res.data
+                payload: sortMoviesData(res.data)
             })
         })
         .catch(err => {
@@ -371,15 +392,17 @@ export const postFeedback = newFeedback => dispatch => {
 }
 
 // Delete feedback
-export const deleteFeedback = (feedbackId, screeningId) => dispatch => {
+export const deleteFeedback = (feedbackId, movieId) => dispatch => {
     axios
         .delete(`/feedback/delete/${feedbackId}`)
         .then(() => {
             dispatch({
                 type: DELETE_FEEDBACK,
-                payload: feedbackId
+                payload: {
+                    feedbackId,
+                    movieId
+                }
             });
-            dispatch(getScreening(screeningId));
             dispatch({ type: STOP_LOADING_UI });
         })
         .catch(err => console.log(err));

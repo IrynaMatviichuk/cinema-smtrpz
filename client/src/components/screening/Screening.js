@@ -92,7 +92,7 @@ class Screening extends Component {
             <Card className={classes.card}>
                 <Paper className={classes.card}>
                     <CardContent className={classes.content}>
-                        <Typography variant="h5" component={Link} to="/movies" color="primary">{title}</Typography>
+                        <Typography variant="h5" color="primary">{title}</Typography>
                         <Typography variant="body2" color="textSecondary">Date: {screening_date}</Typography>
                         <Typography variant="body2" color="textSecondary">Time: {start_time}</Typography>
                         <Typography variant="body2" color="textSecondary">Duration: {duration} min</Typography>
