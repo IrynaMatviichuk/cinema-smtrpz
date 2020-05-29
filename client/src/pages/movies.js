@@ -10,12 +10,14 @@ import { getMovies, getGenres, searchMovies } from '../redux/actions/dataActions
 
 // MUI
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Card from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Paper from '@material-ui/core/Paper';
+import Checkbox from '@material-ui/core/Checkbox';
 
 // Icons
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
@@ -35,6 +37,11 @@ const styles = {
     content: {
         padding: 25
     },
+    dateParameter: {
+        position: 'absolute',
+        top: '65%',
+        left: '92%'
+    }
 }
 
 
@@ -42,7 +49,9 @@ class movies extends Component {
     state = {
         movieId: -1,
         genreId: -1,
-        sortingOrder: 0
+        sortingOrder: 0,
+        screeningDate: undefined,
+        checkDate: false
     }
 
     componentDidMount() {
@@ -54,7 +63,8 @@ class movies extends Component {
         const searchParameters = {
             movieId: this.state.movieId,
             genreId: this.state.genreId,
-            sortingOrder: this.state.sortingOrder
+            sortingOrder: this.state.sortingOrder,
+            screeningDate: this.state.checkDate ? this.state.screeningDate : false,
         }
         console.log(searchParameters);
 
@@ -63,6 +73,10 @@ class movies extends Component {
 
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
+    }
+
+    handleCheck = event => {
+        this.setState({ [event.target.name]: event.target.checked });
     }
 
     render() {
@@ -107,15 +121,35 @@ class movies extends Component {
                             fullWidth
                         >
                             <MenuItem value={-1}>
-                                <ExpandMoreIcon/>
+                                <ExpandMoreIcon />
                                 descending
                             </MenuItem>
                             <MenuItem value={0}>sorting order</MenuItem>
                             <MenuItem value={1}>
-                                <ExpandLessIcon/>
+                                <ExpandLessIcon />
                                 ascending
                             </MenuItem>
                         </Select>
+                        <div>
+                        <TextField
+                            name="screeningDate"
+                            type="date"
+                            label="Screening date"
+                            value={this.state.screeningDate}
+                            className={classes.searchField}
+                            onChange={this.handleChange}
+                            fullWidth
+                            InputLabelProps={{ shrink: true }}
+                            style={{maxWidth:'685px'}}
+                        />
+                        <Checkbox
+                            name="checkDate"
+                            checked={this.state.checkDate}
+                            onChange={this.handleCheck}
+                            className={classes.dateParameter}
+                            color="primary"
+                        />
+                        </div>
                         <Button
                             color="primary"
                             variant="contained"
@@ -154,12 +188,14 @@ movies.propTypes = {
     getGenres: PropTypes.func.isRequired,
     searchMovies: PropTypes.func.isRequired,
     data: PropTypes.object.isRequired,
+    // movie: PropTypes.object.isRequired,
     authenticated: PropTypes.bool.isRequired
 }
 
 
 const mapStateToProps = state => ({
     data: state.data,
+    // movie: state.data.movie,
     authenticated: state.user.authenticated
 })
 

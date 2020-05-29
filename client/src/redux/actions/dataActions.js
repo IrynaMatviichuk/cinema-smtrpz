@@ -398,6 +398,7 @@ export const postFeedback = newFeedback => dispatch => {
     axios
         .post('/feedback/insert', newFeedback)
         .then(res => {
+            console.log(res.data);
             dispatch({
                 type: POST_FEEDBACK,
                 payload: res.data

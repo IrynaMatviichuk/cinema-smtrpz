@@ -124,7 +124,7 @@ class UpdateScreening extends Component {
             auditorium_id_fk: this.state.auditorium_id_fk,
             price: Number(this.state.price),
             screening_date: this.state.screening_date,
-            start_time: this.state.start_time
+            start_time: `${this.state.start_time}${this.state.start_time.length !== 8 ? ":00" : ""}`
         };
 
         this.props.updateScreening(updatedScreening, this.props.screeningId);

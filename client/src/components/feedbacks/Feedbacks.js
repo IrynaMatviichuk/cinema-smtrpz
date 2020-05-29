@@ -49,7 +49,7 @@ class Feedbacks extends Component {
                         <Fragment key={feedback_id}>
                             <Grid item sm={12}>
                                 <Grid container>
-                                    <Grid item sm={10}>
+                                    <Grid item sm={11}>
                                         <div className={classes.commentData}>
                                             <Grid container justify="space-between">
                                                 <Typography
@@ -78,7 +78,7 @@ class Feedbacks extends Component {
                                             </Typography>
                                         </div>
                                     </Grid>
-                                    <Grid item sm={2}>
+                                    <Grid item sm={1}>
                                         {deleteButton}
                                     </Grid>
                                 </Grid>

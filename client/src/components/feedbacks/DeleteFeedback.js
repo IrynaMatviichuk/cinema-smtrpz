@@ -17,11 +17,11 @@ import { deleteFeedback } from '../../redux/actions/dataActions';
 
 
 const styles = {
-    // deleteButton: {
-    //     position: 'absolute',
-    //     left: '90%',
-    //     top: '5%'
-    // }
+    deleteButton: {
+        position: 'absolute',
+        left: '88%',
+        paddingTop: 0
+    }
 }
 
 

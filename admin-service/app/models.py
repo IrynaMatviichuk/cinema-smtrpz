@@ -32,7 +32,7 @@ class Movie(db.Model):
     duration = db.Column(db.Integer, nullable=False)
     genre_id_fk = db.Column(db.Integer, db.ForeignKey("genre.genre_id"), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    screenings = db.relationship("Screening", backref="movie", lazy=False)
+    screenings = db.relationship("Screening", cascade="all,delete", backref="movie", lazy=False)
     feedbacks = db.relationship("Feedback", backref="movie", lazy=False)
 
     def __init__(self, title, duration, genre_id_fk, description):
@@ -44,7 +44,7 @@ class Movie(db.Model):
     def __repr__(self):
         return (
             f"<Movie:(movie_id={self.movie_id}, title={self.title}, duration={self.duration}, "
-            f"genre={self.genre_if_fk}, description={self.description})>"
+            f"genre={self.genre_id_fk}, description={self.description})>"
         )
 
     def to_dict(self, use_id=False):
