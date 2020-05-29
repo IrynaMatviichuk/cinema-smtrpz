@@ -33,6 +33,7 @@ class Movie(db.Model):
     genre_id_fk = db.Column(db.Integer, db.ForeignKey("genre.genre_id"), nullable=False)
     description = db.Column(db.Text, nullable=False)
     screenings = db.relationship("Screening", backref="movie", lazy=False)
+    feedbacks = db.relationship("Feedback", backref="movie", lazy=False)
 
     def __init__(self, title, duration, genre_id_fk, description):
         self.title = title
@@ -52,7 +53,9 @@ class Movie(db.Model):
             "title": self.title,
             "duration": self.duration,
             "genre": self.genre_id_fk if use_id else self.genre.to_dict(),
-            "description": self.description
+            "description": self.description,
+            "feedbacks": [feedback.to_dict(use_id=True) for feedback in self.feedbacks],
+            "screenings": [screening.to_dict(use_id=True) for screening in self.screenings]
         }
 
 
@@ -176,6 +179,7 @@ class CinemaUser(db.Model):
     lastname = db.Column(db.String(20), nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
     bookings = db.relationship("Booking", backref="cinema_user", lazy=False)
+    feedbacks = db.relationship("Feedback", backref="cinema_user", lazy=False)
 
     def __repr__(self):
         return (
@@ -219,4 +223,34 @@ class Booking(db.Model):
             "seat_id_fk": self.seat.to_dict(),
             "booking_date": self.booking_date.strftime("%Y-%m-%d"),
             "booking_time": self.booking_time.strftime("%H:%M:%S"),
+        }
+
+
+class Feedback(db.Model):
+    __tablename__ = "feedback"
+
+    feedback_id = db.Column(db.Integer, primary_key=True)
+    score = db.Column(db.Integer, nullable=False)
+    review = db.Column(db.Text, nullable=False)
+    feedback_date = db.Column(db.Date, default=datetime.datetime.now().date(), nullable=False)
+    feedback_time = db.Column(db.Time, default=datetime.datetime.now().time(), nullable=False)
+    movie_id_fk = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), nullable=False)
+    cinema_user_id_fk = db.Column(db.Integer, db.ForeignKey("cinema_user.cinema_user_id"), nullable=False)
+
+    def __repr__(self):
+        return (
+            f"<Feedback: (feedback_id={self.feedback_id}, "
+            f"score={self.score}, review={self.review}, "
+            f"feedback_date={self.feedback_date}, feedback_time={self.feedback_time}, movie_id_fk={self.movie_id_fk}, cinema_user_id_fk={self.cinema_user_id_fk})>"
+        )
+
+    def to_dict(self, use_id=False):
+        return {
+            "feedback_id": self.feedback_id,
+            "score": self.score,
+            "review": self.review,
+            "feedback_date": self.feedback_date.strftime("%Y-%m-%d"),
+            "feedback_time": self.feedback_time.strftime("%H:%M:%S"),
+            "movie": self.movie_id_fk if use_id else self.movie.to_dict(),
+            "cinema_user": self.cinema_user.to_dict()# self.cinema_user_id_fk if use_id else self.cinema_user.to_dict(),
         }

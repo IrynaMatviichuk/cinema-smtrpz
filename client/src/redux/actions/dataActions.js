@@ -9,6 +9,7 @@ import {
     DELETE_SCREENING,
     SET_MOVIES,
     SET_MOVIE,
+    SET_MOVIES_TO_DISPLAY,
     POST_MOVIE,
     UPDATE_MOVIE,
     DELETE_MOVIE,
@@ -23,10 +24,11 @@ import {
     DELETE_FEEDBACK,
     SET_ERRORS,
     CLEAR_ERRORS,
-    SET_USERS
+    SET_USERS,
+    SET_BOOKINGS_TO_DISPLAY
 } from '../types';
 import axios from 'axios';
-import { sortSeats, sortMoviesData } from '../../util/sortings';
+import { sortSeats, sortMovieData, sortMoviesData } from '../../util/sortings';
 
 
 // Get all screenings
@@ -207,7 +209,7 @@ export const updateMovie = (updatedMovie, movieId) => dispatch => {
         .then(res => {
             dispatch({
                 type: UPDATE_MOVIE,
-                payload: res.data
+                payload: sortMovieData(res.data)
             });
             dispatch({ type: STOP_LOADING_UI });
             dispatch(clearErrors());
@@ -291,8 +293,27 @@ export const getBookings = () => dispatch => {
 }
 
 
+// Search bookings
+export const searchUserBookings = userId => dispatch => {
+    dispatch({
+        type: SET_BOOKINGS_TO_DISPLAY,
+        payload: userId
+    });
+}
+
+
+// Search movies
+export const searchMovies = searchParameters => dispatch => {
+    dispatch({
+        type: SET_MOVIES_TO_DISPLAY,
+        payload: searchParameters
+    })
+}
+
+
+
 // Get all user bookings
-export const getUserBookings = (userId) => dispatch => {
+export const getUserBookings = userId => dispatch => {
     dispatch({ type: LOADING_DATA });
     axios
         .get(`/booking/select/cinema_user/${userId}`)

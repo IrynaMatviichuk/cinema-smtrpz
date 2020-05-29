@@ -6,7 +6,7 @@ import Profile from '../components/Profile';
 
 // Redux
 import { connect } from 'react-redux';
-import { getBookings, getUsers } from '../redux/actions/dataActions';
+import { getBookings, getUsers, searchUserBookings } from '../redux/actions/dataActions';
 
 // MUI
 import Grid from '@material-ui/core/Grid';
@@ -38,7 +38,7 @@ const styles = {
 
 class adminBookings extends Component {
     state = {
-        user: ''
+        userId: -1
     }
 
     componentDidMount() {
@@ -46,40 +46,60 @@ class adminBookings extends Component {
         this.props.getUsers();
     }
 
+    handleSearch = () => {
+        this.props.searchUserBookings(this.state.userId);
+        console.log(this.state.userId);
+    }
+
+    handleChange = event => {
+        this.setState({ [event.target.name]: event.target.value });
+    }
+
     render() {
         const {
             classes,
             data: {
                 bookings,
+                bookingsToDisplay,
                 users,
                 loading
             },
             authenticated
         } = this.props;
+        console.log(bookingsToDisplay);
+        console.log(bookings);
 
-        let filterPanel = (
+        const filterPanel = (
             <Card className={classes.card}>
                 <Paper className={classes.card}>
                     <CardContent className={classes.content}>
                         <Select
-                            name="user"
+                            name="userId"
                             label="User"
-                            value={this.state.user}
+                            value={this.state.userId}
                             className={classes.searchField}
                             onChange={this.handleChange}
                             fullWidth
                         >
+                            <MenuItem value={-1}>@everybody</MenuItem>
                             {!loading && (
                                 users.map(user => <MenuItem value={user.cinema_user_id}>@{user.username}</MenuItem>)
                             )}
                         </Select>
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            onClick={this.handleSearch}
+                        >
+                            Search
+                        </Button>
                     </CardContent>
                 </Paper>
             </Card>
         );
 
-        let bookingMarkup = !loading ? (
-            bookings.map(booking => <Booking key={booking.booking_id} booking={booking} />)
+        const bookingMarkup = !loading ? (
+            bookingsToDisplay.map(booking => <Booking key={booking.booking_id} booking={booking} />)
         ) : (<p>Loading ...</p>);
 
         return (
@@ -101,6 +121,7 @@ class adminBookings extends Component {
 adminBookings.propTypes = {
     getBookings: PropTypes.func.isRequired,
     getUsers: PropTypes.func.isRequired,
+    searchUserBookings: PropTypes.func.isRequired,
     data: PropTypes.object.isRequired,
     authenticated: PropTypes.bool.isRequired
 }
@@ -112,4 +133,11 @@ const mapStateToProps = state => ({
 })
 
 
-export default connect(mapStateToProps, { getBookings, getUsers })(withStyles(styles)(adminBookings));
+const mapActionsToProps = {
+    getBookings,
+    getUsers,
+    searchUserBookings
+}
+
+
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(adminBookings));

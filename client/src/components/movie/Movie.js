@@ -92,7 +92,7 @@ class Movie extends Component {
             }
         } = this.props;
 
-        const screeningsMarkup = Object.keys(screenings).map(screening_date => (
+        const screeningsMarkup = screenings && Object.keys(screenings).map(screening_date => (
             <Fragment>
                 <Typography variant="body2" color="textPrimary">{screening_date}</Typography>
                 {screenings[screening_date].map(screening => (

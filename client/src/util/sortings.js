@@ -21,6 +21,11 @@ export const sortSeats = auditorium => {
 }
 
 
+export const sortMovieData = movie => {
+    return sortScreenings(movie);
+}
+
+
 export const sortMoviesData = movies => {
     return movies.map(movie => sortScreenings(movie)).map(movie => sortFeedbacks(movie));
 }
@@ -37,7 +42,7 @@ export const sortScreenings = movie => {
                     .sort((screening1, screening2) => {
                         if (screening1.start_time < screening2.start_time) return -1;
                         if (screening1.start_time > screening2.start_time) return 1;
-                        
+
                         return 0;
                     })
             })
@@ -64,4 +69,23 @@ export const sortFeedbacks = movie => {
 
     movie.feedbacks = sortedFeedbacks;
     return movie;
+}
+
+
+export const sortMoviesByFeedbacks = (movies, order) => {
+    movies.sort((movie1, movie2) => {
+        const movieScore1 = movie1.feedbacks.length === 0 ? 0 : (movie1.feedbacks.reduce((accumulator, feedback) => accumulator + feedback.score, 0) / movie1.feedbacks.length);
+        const movieScore2 = movie2.feedbacks.length === 0 ? 0 : (movie2.feedbacks.reduce((accumulator, feedback) => accumulator + feedback.score, 0) / movie2.feedbacks.length);
+        console.log(movieScore1, movieScore2);
+
+        if (movieScore1 < movieScore2) return -1;
+        else if (movieScore1 > movieScore2) return 1;
+        return 0;
+    });
+
+    if (order === 1) {
+        movies.reverse()
+    }
+
+    return movies;
 }

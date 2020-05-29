@@ -186,6 +186,7 @@ class UpdateScreening extends Component {
                                 className={classes.textField}
                                 onChange={this.handleChange}
                                 fullWidth
+                                disabled
                             >
                                 {!loading && (
                                     auditoriums.map(auditorium => <MenuItem value={auditorium.auditorium_id}>{auditorium.name}</MenuItem>)

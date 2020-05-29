@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Feedbacks from '../feedbacks/Feedbacks';
-import FeedbackForm from '../screening/FeedbackForm';
+import FeedbackForm from '../feedbacks/FeedbackForm';
 import CustomButton from '../../util/CustomButton';
 import { Link } from 'react-router-dom';
 
