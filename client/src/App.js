@@ -16,6 +16,7 @@ import { logoutUser, getUserData } from './redux/actions/userActions';
 import Navbar from './components/layout/Navbar';
 import AuthRoute from './util/AuthRoute';
 import AdminRoute from './util/AdminRoute';
+import UserRoute from './util/UserRoute';
 
 // Pages
 import home from './pages/home';
@@ -68,7 +69,7 @@ class App extends Component {
               <Navbar />
               <div className="container">
                 <Switch>
-                  <Route exact path="/" component={home} />
+                  <Route exact path="/" component={movies} />
                   <AuthRoute
                     exact
                     path="/login"
@@ -79,10 +80,10 @@ class App extends Component {
                     path="/signup"
                     component={signup}
                   />
-                  <Route exact path="/movies" component={movies}/>
-                  <Route exact path="/booking/:screeningId/:auditoriumId" component={booking}/>
-                  <Route exact path="/bookings/user/:userId" component={userBookings}/>
-                  <Route exact path="/bookings/admin" component={adminBookings}/>
+                  <UserRoute exact path="/booking/:screeningId/:auditoriumId" component={booking}/>
+                  <UserRoute exact path="/bookings/user/:userId" component={userBookings}/>
+                  <AdminRoute exact path="/screenings" component={home}/>
+                  <AdminRoute exact path="/bookings" component={adminBookings}/>
                 </Switch>
               </div>
             </Router>

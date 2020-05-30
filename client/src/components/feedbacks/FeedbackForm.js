@@ -34,7 +34,7 @@ const styles = theme => ({
 
 class FeedbackForm extends Component {
     state = {
-        score: 0,
+        score: '',
         review: '',
         errors: {}
     }
@@ -46,7 +46,7 @@ class FeedbackForm extends Component {
 
         if (!nextProps.UI.errors && !nextProps.UI.loading) {
             this.setState({
-                score: 0,
+                score: '',
                 review: '',
                 errors: {}
             })
@@ -82,6 +82,7 @@ class FeedbackForm extends Component {
                             <Select
                                 name="score"
                                 label="Score"
+                                value={this.state.score}
                                 error={errors.score ? true : false}
                                 className={classes.textField}
                                 onChange={this.handleChange}
@@ -141,4 +142,4 @@ const mapStateToProps = state => ({
 })
 
 
-// export default connect(mapStateToProps, { postFeedback })(withStyles(styles)(FeedbackForm));
+export default connect(mapStateToProps, { postFeedback })(withStyles(styles)(FeedbackForm));

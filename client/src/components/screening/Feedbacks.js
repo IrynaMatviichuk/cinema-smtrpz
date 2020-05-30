@@ -100,4 +100,4 @@ const mapStateToProps = state => ({
 })
 
 
-export default connect(mapStateToProps)(withStyles(styles)(Feedbacks));
+// export default connect(mapStateToProps)(withStyles(styles)(Feedbacks));

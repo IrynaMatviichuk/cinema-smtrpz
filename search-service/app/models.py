@@ -55,6 +55,7 @@ class Movie(db.Model):
             "genre": self.genre_id_fk if use_id else self.genre.to_dict(),
             "description": self.description,
             "feedbacks": [feedback.to_dict(use_id=True) for feedback in self.feedbacks],
+            "screenings": [screening.to_dict(use_id=True) for screening in self.screenings]
         }
 
 

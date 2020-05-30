@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
+import CustomButton from '../util/CustomButton';
 
 // Redux
 import { logoutUser } from '../redux/actions/userActions';
@@ -10,6 +11,7 @@ import { logoutUser } from '../redux/actions/userActions';
 // MUI
 import Paper from '@material-ui/core/Paper';
 import MuiLink from '@material-ui/core/Link';
+import Button from '@material-ui/core/Button';
 
 // Icons
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
@@ -61,6 +63,9 @@ const styles = (theme) => ({
         '& a': {
             margin: '20px 10px'
         }
+    },
+    linkButton: {
+        marginTop: '10px'
     }
 });
 
@@ -77,30 +82,86 @@ class Profile extends Component {
         }, loading
         } = this.props;
 
-        let admin = (
+        const adminMarkup = (
             <div>
-                <WorkIcon color="primary"/>{' '}
+                <CustomButton tip="Administrator">
+                    <WorkIcon color="primary" />
+                </CustomButton>
                 <span>administrator</span>
+                <hr />
+                <Button
+                    color="primary"
+                    variant="contained"
+                    className={classes.bookButton}
+                    component={Link}
+                    to="/"
+                    fullWidth
+                >
+                    movies
+                </Button>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    className={classes.linkButton}
+                    component={Link}
+                    to="/screenings"
+                    fullWidth
+                >
+                    screenings
+                </Button>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    className={classes.linkButton}
+                    component={Link}
+                    to="/bookings"
+                    fullWidth
+                >
+                    bookings
+                </Button>
             </div>
         );
 
-        let profileMarkup = !loading ? (authenticated && (
+        const userMarkup = (
+            <div>
+                <hr />
+                <Button
+                    color="primary"
+                    variant="contained"
+                    className={classes.bookButton}
+                    component={Link}
+                    to="/"
+                    fullWidth
+                >
+                    movies
+                </Button>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    className={classes.linkButton}
+                    component={Link}
+                    to={`/bookings/user/${cinema_user_id}`}
+                    fullWidth
+                >
+                    bookings
+                </Button>
+
+            </div>
+        );
+
+        const profileMarkup = !loading ? (authenticated && (
             <Paper className={classes.paper}>
-                {/* <div className={classes.profile}>
-                    .image
-                </div> */}
                 <div className="profile-details">
-                    <p>profile image</p>
-                    <MuiLink component={Link} to={`/users/${cinema_user_id}`} color="primary" variant="h5">
+                    <MuiLink component={Link} to={`/bookings/user/${cinema_user_id}`} color="primary" variant="h5">
                         @{username}
                     </MuiLink>
-                    <hr/>
-                    <AccountBoxIcon color="primary"/>{' '}
+                    <hr />
+                    <CustomButton tip="Account">
+                        <AccountBoxIcon color="primary" />
+                    </CustomButton>
                     <span>{firstname} {lastname}</span>
-                    <br/>
-                    {is_admin && admin}
-                    <p>number of reserved tickets</p>
-                    <p>total number of reserved tickets</p>
+                    <br />
+                    {is_admin ? adminMarkup : userMarkup}
                 </div>
             </Paper>
         )) : (<p>loading...</p>);

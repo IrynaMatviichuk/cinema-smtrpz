@@ -9,6 +9,7 @@ import {
     DELETE_SCREENING,
     SET_MOVIES,
     SET_MOVIE,
+    SET_MOVIES_TO_DISPLAY,
     POST_MOVIE,
     UPDATE_MOVIE,
     DELETE_MOVIE,
@@ -22,10 +23,12 @@ import {
     POST_FEEDBACK,
     DELETE_FEEDBACK,
     SET_ERRORS,
-    CLEAR_ERRORS
+    CLEAR_ERRORS,
+    SET_USERS,
+    SET_BOOKINGS_TO_DISPLAY
 } from '../types';
 import axios from 'axios';
-import { sortSeats } from '../../util/sorting/sortSeats';
+import { sortSeats, sortMovieData, sortMoviesData } from '../../util/sortings';
 
 
 // Get all screenings
@@ -44,6 +47,26 @@ export const getScreenings = () => dispatch => {
                 type: SET_SCREENINGS,
                 payload: []
             })
+        });
+}
+
+
+// Get all users
+export const getUsers = () => dispatch => {
+    dispatch({ type: LOADING_DATA });
+    axios
+        .get('/auth/users')
+        .then(res => {
+            dispatch({
+                type: SET_USERS,
+                payload: res.data
+            });
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_USERS,
+                payload: []
+            });
         });
 }
 
@@ -129,7 +152,7 @@ export const getMovies = () => dispatch => {
         .then(res => {
             dispatch({
                 type: SET_MOVIES,
-                payload: res.data
+                payload: sortMoviesData(res.data)
             })
         })
         .catch(err => {
@@ -186,7 +209,7 @@ export const updateMovie = (updatedMovie, movieId) => dispatch => {
         .then(res => {
             dispatch({
                 type: UPDATE_MOVIE,
-                payload: res.data
+                payload: sortMovieData(res.data)
             });
             dispatch({ type: STOP_LOADING_UI });
             dispatch(clearErrors());
@@ -270,8 +293,27 @@ export const getBookings = () => dispatch => {
 }
 
 
+// Search bookings
+export const searchUserBookings = userId => dispatch => {
+    dispatch({
+        type: SET_BOOKINGS_TO_DISPLAY,
+        payload: userId
+    });
+}
+
+
+// Search movies
+export const searchMovies = searchParameters => dispatch => {
+    dispatch({
+        type: SET_MOVIES_TO_DISPLAY,
+        payload: searchParameters
+    })
+}
+
+
+
 // Get all user bookings
-export const getUserBookings = (userId) => dispatch => {
+export const getUserBookings = userId => dispatch => {
     dispatch({ type: LOADING_DATA });
     axios
         .get(`/booking/select/cinema_user/${userId}`)
@@ -356,6 +398,7 @@ export const postFeedback = newFeedback => dispatch => {
     axios
         .post('/feedback/insert', newFeedback)
         .then(res => {
+            console.log(res.data);
             dispatch({
                 type: POST_FEEDBACK,
                 payload: res.data
@@ -371,15 +414,17 @@ export const postFeedback = newFeedback => dispatch => {
 }
 
 // Delete feedback
-export const deleteFeedback = (feedbackId, screeningId) => dispatch => {
+export const deleteFeedback = (feedbackId, movieId) => dispatch => {
     axios
         .delete(`/feedback/delete/${feedbackId}`)
         .then(() => {
             dispatch({
                 type: DELETE_FEEDBACK,
-                payload: feedbackId
+                payload: {
+                    feedbackId,
+                    movieId
+                }
             });
-            dispatch(getScreening(screeningId));
             dispatch({ type: STOP_LOADING_UI });
         })
         .catch(err => console.log(err));

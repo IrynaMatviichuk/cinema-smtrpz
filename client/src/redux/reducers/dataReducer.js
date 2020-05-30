@@ -6,12 +6,14 @@ import {
     DELETE_SCREENING,
     SET_MOVIES,
     SET_MOVIE,
+    SET_MOVIES_TO_DISPLAY,
     POST_MOVIE,
     UPDATE_MOVIE,
     DELETE_MOVIE,
     SET_AUDITORIUMS,
     SET_AUDITORIUM,
     SET_BOOKINGS,
+    SET_BOOKINGS_TO_DISPLAY,
     SET_USER_BOOKINGS,
     SET_BOOKED_SEATS,
     POST_BOOKING,
@@ -19,13 +21,17 @@ import {
     POST_FEEDBACK,
     DELETE_FEEDBACK,
     LOADING_DATA,
+    SET_USERS
 } from '../types';
+
+import { sortMoviesByFeedbacks } from '../../util/sortings';
 
 
 const initialState = {
     screenings: [],
     screening: {},
     movies: [],
+    moviesToDisplay: [],
     movie: {},
     auditoriums: [],
     auditorium: {},
@@ -33,6 +39,8 @@ const initialState = {
     bookedSeats: [],
     userBookings: [],
     bookings: [],
+    bookingsToDisplay: [],
+    users: [],
     loading: false
 };
 
@@ -48,12 +56,6 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 screenings: action.payload,
-                loading: false
-            }
-        case SET_BOOKINGS:
-            return {
-                ...state,
-                bookings: action.payload,
                 loading: false
             }
         case SET_USER_BOOKINGS:
@@ -75,6 +77,12 @@ export default function (state = initialState, action) {
                     ...state.screenings
                 ]
             }
+        case UPDATE_SCREENING:
+            let screeningToUpdate = state.screenings.findIndex(screening => screening.screening_id === action.payload.screening_id);
+            state.screenings[screeningToUpdate] = action.payload;
+            return {
+                ...state
+            }
         case DELETE_SCREENING:
             let screeningIndex = state.screenings.findIndex(screening => screening.screening_id === action.payload);
             state.screenings.splice(screeningIndex, 1);
@@ -85,6 +93,7 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 movies: action.payload,
+                moviesToDisplay: action.payload,
                 loading: false
             }
         case SET_MOVIE:
@@ -92,31 +101,50 @@ export default function (state = initialState, action) {
                 ...state,
                 movie: action.payload
             }
+        case SET_MOVIES_TO_DISPLAY:
+            let filteredMovies = action.payload.movieId === -1 ? state.movies : (
+                state.movies.filter(movie => movie.movie_id === action.payload.movieId)
+            );
+            filteredMovies = action.payload.genreId === -1 ? filteredMovies : (
+                filteredMovies.filter(movie => movie.genre.genre_id === action.payload.genreId)
+            );
+            filteredMovies = action.payload.sortingOrder === 0 ? filteredMovies : (
+                filteredMovies = sortMoviesByFeedbacks(filteredMovies, action.payload.sortingOrder)
+            );
+            filteredMovies = !action.payload.screeningDate ? filteredMovies : (
+                filteredMovies.filter(movie => movie.screenings.hasOwnProperty(action.payload.screeningDate))
+            )
+            return {
+                ...state,
+                moviesToDisplay: filteredMovies
+            }
         case UPDATE_MOVIE:
             let movieToUpdate = state.movies.findIndex(movie => movie.movie_id === action.payload.movie_id);
             state.movies[movieToUpdate] = action.payload;
+            movieToUpdate = state.moviesToDisplay.findIndex(movie => movie.movie_id === action.payload.movie_id);
+            state.moviesToDisplay[movieToUpdate] = action.payload;
             return {
-                ...state,
-                // movie: action.payload
-            }
-        case UPDATE_SCREENING:
-            let screeningToUpdate = state.screenings.findIndex(screening => screening.screening_id === action.payload.screening_id);
-            state.screenings[screeningToUpdate] = action.payload;
-            return {
-                ...state,
-                // screening: action.payload
+                ...state
             }
         case POST_MOVIE:
             return {
                 ...state,
                 movies: [
                     action.payload,
-                    ...state.movies
+                    ...state.movies,
+                ],
+                moviesToDisplay: [
+                    action.payload,
+                    ...state.moviesToDisplay
                 ]
             }
         case DELETE_MOVIE:
             let movieIndex = state.movies.findIndex(movie => movie.movie_id === action.payload);
             state.movies.splice(movieIndex, 1);
+            movieIndex = state.moviesToDisplay.findIndex(movie => movie.movie_id === action.payload);
+            if (movieIndex !== -1) {
+                state.moviesToDisplay.splice(movieIndex, 1);
+            }
             return {
                 ...state
             }
@@ -135,6 +163,21 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 bookedSeats: action.payload
+            }
+        case SET_BOOKINGS:
+            return {
+                ...state,
+                bookings: action.payload,
+                bookingsToDisplay: action.payload,
+                loading: false
+            }
+        case SET_BOOKINGS_TO_DISPLAY:
+            let filteredBookings = action.payload === -1 ? state.bookings : (
+                state.bookings.filter(booking => booking.cinema_user_id_fk.cinema_user_id === action.payload)
+            )
+            return {
+                ...state,
+                bookingsToDisplay: filteredBookings
             }
         case POST_BOOKING:
             return {
@@ -155,19 +198,36 @@ export default function (state = initialState, action) {
                 loading: false
             }
         case POST_FEEDBACK:
+            // let postFeedbackMovieIndex = state.movies.findIndex(movie => movie.movie_id === action.payload.movie.movie_id);
+            // state.movies[postFeedbackMovieIndex].feedbacks.push(action.payload);
+            // postFeedbackMovieIndex = state.moviesToDisplay.findIndex(movie => movie.movie_id === action.payload.movie.movie_id);
+            // state.moviesToDisplay[postFeedbackMovieIndex].feedbacks.push(action.payload);
+            // console.log(state.moviesToDisplay[postFeedbackMovieIndex]);
             return {
                 ...state,
-                screening: {
-                    ...state.screening,
-                    movie: {
-                        ...state.screening.movie,
-                        feedbacks: [action.payload, ...state.screening.movie.feedbacks]
-                    }
+                movie: {
+                    ...state.movie,
+                    feedbacks: [action.payload, ...state.movie.feedbacks]
                 }
             }
         case DELETE_FEEDBACK:
+            let feedbackMovieIndex = state.movies.findIndex(movie => movie.movie_id === action.payload.movieId);
+            let feedbackIndex = state.movies[feedbackMovieIndex].feedbacks.findIndex(feedback => feedback.feedback_id === action.payload.feedbackId);
+            state.movies[feedbackMovieIndex].feedbacks.splice(feedbackIndex, 1);
+            feedbackIndex = state.movie.feedbacks.findIndex(feedback => feedback.feedback_id === action.payload.feedbackId);
+            state.movie.feedbacks.splice(feedbackIndex, 1);
             return {
-                ...state
+                ...state,
+                movie: {
+                    ...state.movie,
+                    feedbacks: [...state.movie.feedbacks]
+                }
+            }
+        case SET_USERS:
+            return {
+                ...state,
+                users: action.payload,
+                loading: false
             }
         default:
             return state;
