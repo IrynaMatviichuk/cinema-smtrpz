@@ -99,8 +99,8 @@ insert into auditorium(name) VALUES
 
 
 insert into seat(auditorium_id_fk, row, number) (
-    select auditorium.auditorium_id, row, number from generate_series(1, 12) as number
-    cross join generate_series(1, 10) as row
+    select auditorium.auditorium_id, row, number from generate_series(1, 10) as number
+    cross join generate_series(1, 12) as row
     cross join (
         select auditorium_id from auditorium where name='Berlin'
     ) as auditorium
@@ -108,7 +108,7 @@ insert into seat(auditorium_id_fk, row, number) (
 
 
 insert into seat(auditorium_id_fk, row, number) (
-    select auditorium.auditorium_id, row, number from generate_series(1, 14) as number
+    select auditorium.auditorium_id, row, number from generate_series(1, 10) as number
     cross join generate_series(1, 12) as row
     cross join (
         select auditorium_id from auditorium where name='New York'
@@ -117,8 +117,8 @@ insert into seat(auditorium_id_fk, row, number) (
 
 
 insert into seat(auditorium_id_fk, row, number) (
-    select auditorium.auditorium_id, row, number from generate_series(1, 12) as number
-    cross join generate_series(1, 9) as row
+    select auditorium.auditorium_id, row, number from generate_series(1, 10) as number
+    cross join generate_series(1, 12) as row
     cross join (
         select auditorium_id from auditorium where name='London'
     ) as auditorium
@@ -126,8 +126,8 @@ insert into seat(auditorium_id_fk, row, number) (
 
 
 insert into seat(auditorium_id_fk, row, number) (
-    select auditorium.auditorium_id, row, number from generate_series(1, 2) as number
-    cross join generate_series(1, 6) as row
+    select auditorium.auditorium_id, row, number from generate_series(1, 10) as number
+    cross join generate_series(1, 12) as row
     cross join (
         select auditorium_id from auditorium where name='Kyiv'
     ) as auditorium
@@ -135,8 +135,8 @@ insert into seat(auditorium_id_fk, row, number) (
 
 
 insert into seat(auditorium_id_fk, row, number) (
-    select auditorium.auditorium_id, row, number from generate_series(1, 4) as number
-    cross join generate_series(1, 6) as row
+    select auditorium.auditorium_id, row, number from generate_series(1, 10) as number
+    cross join generate_series(1, 12) as row
     cross join (
         select auditorium_id from auditorium where name='Tokyo'
     ) as auditorium
@@ -144,8 +144,8 @@ insert into seat(auditorium_id_fk, row, number) (
 
 
 insert into seat(auditorium_id_fk, row, number) (
-    select auditorium.auditorium_id, row, number from generate_series(1, 8) as number
-    cross join generate_series(1, 6) as row
+    select auditorium.auditorium_id, row, number from generate_series(1, 10) as number
+    cross join generate_series(1, 12) as row
     cross join (
         select auditorium_id from auditorium where name='Amsterdam'
     ) as auditorium

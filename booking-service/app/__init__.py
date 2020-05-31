@@ -1,10 +1,12 @@
 from flask import Flask, jsonify
+from flask_socketio import SocketIO, send
 from flask_sqlalchemy import SQLAlchemy
 
 from config import app_config
 
 
 db = SQLAlchemy()
+socketio = SocketIO()
 
 
 def create_app(config_name):
@@ -15,9 +17,5 @@ def create_app(config_name):
     from .booking import booking as booking_blueprint
     app.register_blueprint(booking_blueprint, url_prefix="/book")
 
-    @app.route("/url/map", methods=["GET"])
-    def url_map():
-        endpoints = [(rule.endpoint, list(rule.methods), str(rule)) for rule in app.url_map.iter_rules()]
-        return jsonify(endpoints)
-
+    socketio.init_app(app, cors_allowed_origins="*")
     return app

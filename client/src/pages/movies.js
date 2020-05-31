@@ -66,7 +66,6 @@ class movies extends Component {
             sortingOrder: this.state.sortingOrder,
             screeningDate: this.state.checkDate ? this.state.screeningDate : false,
         }
-        console.log(searchParameters);
 
         this.props.searchMovies(searchParameters);
     }
@@ -81,7 +80,7 @@ class movies extends Component {
 
     render() {
         const { classes, data: { movies, moviesToDisplay, genres, loading }, authenticated } = this.props;
-        console.log(moviesToDisplay);
+
         const filterPanel = (
             <Card className={classes.card}>
                 <Paper className={classes.card}>

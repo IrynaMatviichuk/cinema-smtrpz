@@ -48,7 +48,6 @@ class adminBookings extends Component {
 
     handleSearch = () => {
         this.props.searchUserBookings(this.state.userId);
-        console.log(this.state.userId);
     }
 
     handleChange = event => {
@@ -66,8 +65,6 @@ class adminBookings extends Component {
             },
             authenticated
         } = this.props;
-        console.log(bookingsToDisplay);
-        console.log(bookings);
 
         const filterPanel = (
             <Card className={classes.card}>

@@ -198,11 +198,6 @@ export default function (state = initialState, action) {
                 loading: false
             }
         case POST_FEEDBACK:
-            // let postFeedbackMovieIndex = state.movies.findIndex(movie => movie.movie_id === action.payload.movie.movie_id);
-            // state.movies[postFeedbackMovieIndex].feedbacks.push(action.payload);
-            // postFeedbackMovieIndex = state.moviesToDisplay.findIndex(movie => movie.movie_id === action.payload.movie.movie_id);
-            // state.moviesToDisplay[postFeedbackMovieIndex].feedbacks.push(action.payload);
-            // console.log(state.moviesToDisplay[postFeedbackMovieIndex]);
             return {
                 ...state,
                 movie: {

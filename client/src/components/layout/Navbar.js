@@ -30,6 +30,7 @@ class Navbar extends Component {
 
     render() {
         const { classes, user: { authenticated, is_admin, cinema_user_id } } = this.props;
+
         return (
             <AppBar>
                 <Toolbar className="nav-container">

@@ -318,7 +318,6 @@ export const getUserBookings = userId => dispatch => {
     axios
         .get(`/booking/select/cinema_user/${userId}`)
         .then(res => {
-            console.log(res.data)
             dispatch({
                 type: SET_USER_BOOKINGS,
                 payload: res.data
@@ -339,7 +338,6 @@ export const getBookedSeats = screeningId => dispatch => {
     axios
         .get(`/booking/select/booked/seats/${screeningId}`)
         .then(res => {
-            console.log(res.data)
             dispatch({
                 type: SET_BOOKED_SEATS,
                 payload: res.data
@@ -398,7 +396,6 @@ export const postFeedback = newFeedback => dispatch => {
     axios
         .post('/feedback/insert', newFeedback)
         .then(res => {
-            console.log(res.data);
             dispatch({
                 type: POST_FEEDBACK,
                 payload: res.data
