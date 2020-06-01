@@ -76,7 +76,6 @@ export const sortMoviesByFeedbacks = (movies, order) => {
     movies.sort((movie1, movie2) => {
         const movieScore1 = movie1.feedbacks.length === 0 ? 0 : (movie1.feedbacks.reduce((accumulator, feedback) => accumulator + feedback.score, 0) / movie1.feedbacks.length);
         const movieScore2 = movie2.feedbacks.length === 0 ? 0 : (movie2.feedbacks.reduce((accumulator, feedback) => accumulator + feedback.score, 0) / movie2.feedbacks.length);
-        console.log(movieScore1, movieScore2);
 
         if (movieScore1 < movieScore2) return -1;
         else if (movieScore1 > movieScore2) return 1;

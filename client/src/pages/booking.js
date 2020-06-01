@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+// import io from 'socket.io-client';
+import socketIOClient from 'socket.io-client';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Booking from '../components/booking/Booking';
 import Profile from '../components/Profile';
@@ -15,11 +17,19 @@ import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 
+// let socket = io.connect();
+let socket = socketIOClient("http://localhost:8082");
+
+
 const styles = {
     submitButton: {
-        position: 'relative',
+        // position: 'relative',
         margin: '10px auto 10px auto',
-        // float: 'right'
+        // position: 'absolute',
+        float: 'right',
+        marginRight: '160px'
+        // left: '90%',
+        // top: '2%'
     },
     seatButton: {
         margin: '7px',
@@ -41,13 +51,32 @@ const styles = {
 
 
 class booking extends Component {
-    state = {
-        chosenSeats: []
+    constructor() {
+        super();
+        this.state = {
+            chosenSeats: [],
+            reservedSeats: false
+        }
     }
 
     componentDidMount() {
         this.props.getAuditorium(this.props.match.params.auditoriumId);
         this.props.getBookedSeats(this.props.match.params.screeningId);
+
+        socket.emit('get seats', { screeningId: this.props.match.params.screeningId });
+
+        socket.on('accept seats', data => {
+            this.setState({
+                reservedSeats: JSON.parse(data)
+            });
+        })
+
+        socket.on('updated seats', data => {
+            this.setState({
+                chosenSeats: [],
+                reservedSeats: JSON.parse(data)
+            });
+        })
     }
 
     handleSeatCLick = event => {
@@ -61,7 +90,6 @@ class booking extends Component {
             chosenSeats.push(targetId);
             this.setState({ chosenSeats: chosenSeats });
         }
-        console.log(this.state.chosenSeats);
     }
 
     handleSubmit = event => {
@@ -76,8 +104,7 @@ class booking extends Component {
             })
         }
 
-        console.log(newBooking);
-        this.props.postBooking(newBooking);
+        socket.emit('book seat', newBooking);
     }
 
     render() {
@@ -85,67 +112,58 @@ class booking extends Component {
             classes,
             data: {
                 loading,
-                auditorium: {
-                    name,
-                    seats
-                },
+                auditorium: { seats },
                 bookedSeats
             },
-            user: {
-                authenticated,
-                cinema_user_id
-            }
+            user: { authenticated }
         } = this.props;
-        const { chosenSeats } = this.state;
+        const { chosenSeats, reservedSeats } = this.state;
 
         let bookingMarkup = !loading ? (
             <div>
             </div>
         ) : (<p>Loading ...</p>);
 
-        let auditoriumMarkup = !loading && seats ? (
+        let auditoriumMarkup = !loading && seats && reservedSeats ? (
             <Fragment>
-                <Grid container spacing={16}>
-                    <Grid item sm={8} xs={30}></Grid>
+                <Grid container spacing={16} alignContent="center" justify="center">
                     {Object.entries(seats).map(row => (
-                        <Grid item sm={10} xs={50}>
-                            <span>{row[0]} row</span>
+                        <Grid item sm={10} xs={10}>
                             {row[1].map(seat => (
-                                // <Button
-                                // variant="contained"
-                                //     className={classes.seatButton}
-                                //     >
-                                //         {seat.number}
-                                // </Button>
                                 <button
                                     id={seat.seat_id}
                                     onClick={this.handleSeatCLick}
-                                    disabled={bookedSeats.includes(seat.seat_id)}
-                                    className={`MuiButtonBase-root MuiButton-root MuiButton-contained booking-seatButton-284 MuiButton-contained${chosenSeats.includes(seat.seat_id) ? "Secondary" : "Primary"} MuiButton-containedSizeSmall MuiButton-sizeSmall ${bookedSeats.includes(seat.seat_id) ? "Mui-disabled Mui-disabled" : ""} booking-seatButton`}
-                                    styles={{
-                                        margin: '7px',
+                                    disabled={reservedSeats.includes(seat.seat_id)}
+                                    className={`MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-contained${chosenSeats.includes(seat.seat_id) ? "Secondary" : "Primary"} MuiButton-containedSizeSmall MuiButton-sizeSmall ${reservedSeats.includes(seat.seat_id) ? "Mui-disabled Mui-disabled" : ""} booking-seatButton`}
+                                    style={{
+                                        marginRight: '10px',
                                         maxWidth: '30px',
                                         maxHeight: '30px',
                                         minWidth: '30px',
                                         minHeight: '30px'
                                     }}
                                 >
-                                    {bookedSeats.includes(seat.seat_id) ? "x" : seat.number}
+                                    {reservedSeats.includes(seat.seat_id) ? "x" : seat.number}
                                 </button>
                             ))}
+                            <Typography variant="overline" color="textPrimary" align="right" inline-block>{row[0] + " row" + (row[0] > 9 ? "" : " ")}</Typography>
                             <hr className={classes.invisibleSeparator} />
                         </Grid>
                     ))}
-                    <Grid item sm={8} xs={30}></Grid>
                 </Grid>
             </Fragment>
         ) : null;
 
         return (
             <Fragment>
-                <Grid container spacing={16}>
-                    <Grid item sm={8} xs={12}>
+                <Grid container spacing={16} alignContent="center" justify="center">
+                    <Grid item sm/>
+                    <Grid item sm/>
+                    <Grid item sm/>
+                    <Grid item sm/>
+                    <Grid item sm={6} xs={12} alignContent="center">
                         <Typography variant="h5" color="primary" align="center">Choose seats to book</Typography>
+                        <hr className={classes.invisibleSeparator} />
                         {bookingMarkup}
                         {auditoriumMarkup}
                         <form onSubmit={this.handleSubmit}>
